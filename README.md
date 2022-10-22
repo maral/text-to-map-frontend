@@ -16,7 +16,7 @@ Nabízí se řada využití těchto dat:
 Prvotním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) a tím motivovat úředníky, aby psali spádovosti ve Street Markdownu a vyhlášky tak byly snadno strojově zpracovatelné. V nejlepším případě by pak byly spádovosti spravovány na jednom místě (např. v gesci MŠMT) přímo ve strojově zpracovatelném formátu a byly dostupné v podobě otevřených dat. V tu chvíli by bylo možné využívat všechny související nástroje pro celou ČR.
 
 ## Street Markdown
-Street Markdown je formát, který po vzoru značkovacího jazyka [Markdown](https://en.wikipedia.org/wiki/Markdown) má za cíl usnadnit psaní strukturovaných dat bez nutnosti učit se složité formátovací tagy nebo používat speciální znaky. Vznikl na základě [pražské spádové vyhlášky z roku 2022
+Street Markdown je formát, který po vzoru značkovacího jazyka [Markdown](https://en.wikipedia.org/wiki/Markdown) má za cíl usnadnit psaní strukturovaných dat bez nutnosti učit se složité formátovací tagy nebo používat speciální znaky. Vznikl na základě [pražské spádové vyhlášky z roku 2022](https://www.praha.eu/file/3251117/vyhlaska_c._4.pdf) a snaží se být co nejkompatibilnější s již používaným formátem.
 
 Street Markdown je dále možný rozšiřovat pro další případy použití - například protialkoholová vyhláška (do standardu by byla třeba přidat definice parků), tržní vyhláška, vyhláška o buskingu a další.
 
@@ -65,3 +65,10 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
             * např. 1-9, 11, od 23 výše
 * aktuální regexp pro validaci jednoho řádku s adresou:
      * _^([^–-]+?)( [–-] (lichá č.|sudá č.|č.|č. p.)( (\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?)((, ?| ?a ?)(\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?))*)?((, ?| ?a ?)(lichá č.|sudá č.|č.|č. p.)( (\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?)((, ?| ?a ?)(\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?))*)?)*)?$_
+
+
+### Aktuální problémy SMD
+* chybí podpora negativního vymezení, např. "Purkyňova - mimo č. 27"
+    * bylo by možné použít, ale v případě více pravidel může dojít k překryvům / logickým dírám, nešlo by je např. použít v jednoduchém vzorci v tabulkovém procesoru
+    * je třeba podrobněji rozmyslet
+* orientační čísla mívají u sebe také písmena, tím pádem rozsahy nemusí obsahovat čistý datový typ integer, ale kombinaci čísla a písmene - jde o minimum případů, ale vyhodnocení je tím pádem o dost složitější
