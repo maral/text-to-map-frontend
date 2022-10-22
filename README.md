@@ -13,7 +13,9 @@ Nabízí se řada využití těchto dat:
 - zobrazení demografických výhledů na dalších roky
 
 ## Co je ambicí tohoto projektu?
-Prvotním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) a tím motivovat úředníky, aby psali spádovosti ve Street Markdownu a vyhlášky tak byly snadno strojově zpracovatelné. V nejlepším případě by pak byly spádovosti spravovány na jednom místě (např. v gesci MŠMT) přímo ve strojově zpracovatelném formátu a byly dostupné v podobě otevřených dat. V tu chvíli by bylo možné využívat všechny související nástroje pro celou ČR.
+Hlavním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) a tím motivovat úředníky, aby psali spádovosti ve Street Markdownu a vyhlášky tak byly snadno strojově zpracovatelné. V nejlepším případě by pak byly spádovosti spravovány na jednom místě (např. v gesci MŠMT) přímo ve strojově zpracovatelném formátu a byly dostupné v podobě otevřených dat. V tu chvíli by bylo možné využívat všechny související nástroje pro celou ČR.
+
+Dalším budoucím potenciálním cílem je rozšíření principu text-to-map a formátu Street Markdown pro další způsoby využití (viz níže).
 
 ## Street Markdown
 Street Markdown je formát, který po vzoru značkovacího jazyka [Markdown](https://en.wikipedia.org/wiki/Markdown) má za cíl usnadnit psaní strukturovaných dat bez nutnosti učit se složité formátovací tagy nebo používat speciální znaky. Vznikl na základě [pražské spádové vyhlášky z roku 2022](https://www.praha.eu/file/3251117/vyhlaska_c._4.pdf) a snaží se být co nejkompatibilnější s již používaným formátem.
