@@ -53,7 +53,7 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
     * za sebou jdoucí výčet _rozsahů čísel_
     * _rozsahy čísel_ jsou odděleny čárkou a mezerou (", ") nebo spojkou " a "
 * **rozsah čísel**
-    * jako rozsah čísel se považuje specifikace, zda jde o _typ čísel _(všechna, sudá či lichá čísla) a _rozsah_ od-do, a to v následujícím formátu:
+    * jako rozsah čísel se považuje specifikace, zda jde o _typ čísel_ (všechna, sudá či lichá čísla) a _rozsah_ od-do, a to v následujícím formátu:
         * **typ číse**l
             * všechna = "č."
             * lichá = "lichá č."
