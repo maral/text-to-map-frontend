@@ -51,7 +51,7 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
     * jméno ulice a specifikace ulice je odděleno znaménkem minus (a volitelnými mezerami okolo pomlčky) - místo minus jsou přípustné i pomlčka a spojovník
 * **specifikace orientačních čísel**
     * za sebou jdoucí výčet _rozsahů čísel_
-    * _rozsahy čísel _jsou odděleny čárkou a mezerou (", ") nebo spojkou " a "
+    * _rozsahy čísel_ jsou odděleny čárkou a mezerou (", ") nebo spojkou " a "
 * **rozsah čísel**
     * jako rozsah čísel se považuje specifikace, zda jde o _typ čísel _(všechna, sudá či lichá čísla) a _rozsah_ od-do, a to v následujícím formátu:
         * **typ číse**l
