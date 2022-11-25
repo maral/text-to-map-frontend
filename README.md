@@ -74,3 +74,7 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
     * bylo by možné použít, ale v případě více pravidel může dojít k překryvům / logickým dírám, nešlo by je např. použít v jednoduchém vzorci v tabulkovém procesoru
     * je třeba podrobněji rozmyslet
 * orientační čísla mívají u sebe také písmena, tím pádem rozsahy nemusí obsahovat čistý datový typ integer, ale kombinaci čísla a písmene - jde o minimum případů, ale vyhodnocení je tím pádem o dost složitější
+
+## Plán rozvoje aplikace
+
+Plán vývoje máme v [Google dokumentu](https://docs.google.com/document/d/1sjGZ1A5HMstfswkfi0Ga_cqPYzA_yTKqIlUZTuGadqI/edit?usp=sharing).
