@@ -19,20 +19,21 @@ function App() {
         );
       }
     })
-    return (<div id="wrapper">{isMapLoaded ? <p>Loading...</p> : <p>Wrapper loaded</p>}</div>)
+    return (<div id="wrapper">{isMapLoaded ? <p>Loading...</p> : <ActualMap />}</div>)
     };
 
-    function ActualMap() {
-      const mapa = null;
+    function AddScript(scriptUrl) {
       useEffect(() => {
-        var stred = SMap.Coords.fromWGS84(14.41, 50.08);
-        var defaultMap = new SMap(JAK.gel("map"), stred, 10);
-        mapa.addDefaultLayer(SMap.DEF_BASE).enable();
-        mapa.addDefaultControls();
+        const script = document.createElement("script");
+        script.src = scriptUrl;
+        script.async = false;
+        script.type = "text/javascript"
+        document.getElementById("map").appendChild(script);
       })
+    }
 
-
-      return (<div id="map"/>);
+    function ActualMap() {
+      return (<div id="map" style={{width: "600px", height: "400px"}}>{AddScript("/mapscript.js")}</div>);
     };
 
   return (
