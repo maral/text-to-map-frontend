@@ -13,6 +13,11 @@
   }
 }
 
+#mapa {
+  width:600px;
+  height:400px;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
