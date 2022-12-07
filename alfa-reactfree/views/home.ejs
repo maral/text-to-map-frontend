@@ -1,0 +1,46 @@
+<%- include("partials/header"); -%>
+
+  <div id="map" style="width:600px; height:400px;"></div>
+
+  <script type="text/javascript">
+    // initialize
+    var schoolCatchment = <%- JSON.stringify(getCatchmentArea) %>;
+    console.log(schoolCatchment, "homelog");
+    // underlying map
+    <%- include("partials/baselayer"); -%>
+    // const schoolCatchment = JSON.stringify(homes)
+
+        //deconstruct the catchment area into an array with individual homes (adress points)
+        const [homes] = schoolCatchment;
+        //create a map marker for each home
+        const markers = []; //initialize an empty set of markers
+        // iterate through the homes and create markers, add each to the marker set
+        homes.forEach((home, index) => {
+          const settings = {}; //this is for marker settings
+          const gpsCoords = SMap.Coords.fromWGS84(home.lng, home.lat);
+          const markerId = index; //unique marker identifier
+          const finalMarker = new SMap.Marker(gpsCoords, markerId, settings);  // GPS coords, unique ID, optional settings
+          markers.push(finalMarker);
+        });
+        // show the marker on the map
+        markers.forEach((marker) => {
+          layer.addMarker(marker);
+        });
+
+  </script>
+
+
+
+  <form class="hledejskolu" action="/" method="post">
+    <input type="text" name="ulice" value="" placeholder="Sem zadejte ulici a číslo">
+    <button type="submit" class="btn btn-primary" name="button">Hledej!</button>
+  </form>
+
+<form class="nahratdeti" action="index.html" method="post">
+  <button type="button" name="button">Nahrát soubor</button>
+</form>
+
+
+
+
+<%- include("partials/footer"); -%>
