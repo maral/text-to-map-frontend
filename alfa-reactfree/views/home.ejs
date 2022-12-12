@@ -8,8 +8,6 @@
     console.log(schoolCatchment, "homelog");
     // underlying map
     <%- include("partials/baselayer"); -%>
-    // const schoolCatchment = JSON.stringify(homes)
-
         //deconstruct the catchment area into an array with individual homes (adress points)
         const [homes] = schoolCatchment;
         //create a map marker for each home
@@ -28,17 +26,6 @@
         });
 
   </script>
-
-
-
-  <form class="hledejskolu" action="/" method="post">
-    <input type="text" name="ulice" value="" placeholder="Sem zadejte ulici a číslo">
-    <button type="submit" class="btn btn-primary" name="button">Hledej!</button>
-  </form>
-
-<form class="nahratdeti" action="index.html" method="post">
-  <button type="button" name="button">Nahrát soubor</button>
-</form>
 
 
 

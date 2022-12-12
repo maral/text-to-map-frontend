@@ -1,0 +1,45 @@
+<!--
+///////////// ZADEJ ADRESU, NAJDI SKOLU
+// click the submit button, make a post request to /najdiskolu
+// findOne v nasi mongodb - zkusebne to bude jen pet ulic v lokalnim objektu (simulace mongo)
+// pokud nenajde, vyhodi alert, ze nenaslo ulici, zkuste znovu
+// pokud najde a existuje skola, vytvori dva markery - pro skolu a pro ulici (pokud neexistuje, vyhodi jeden marker a upozorni)
+// marker pro skolu bude mit jiny design
+-->
+
+<%- include("partials/header"); -%>
+
+<!-- map frame - repetitive -->
+<div id="map" style="width:300px; height:200px;"></div>
+
+<form class="hledejskolu" action="/najdiskolu" method="post">
+  <label>Zadejte ulici</label>
+  <input class="form-control" value="" type="text" name="ulice" placeholder="Sem zadejte ulici a číslo" id="streetlookup">
+  <button type="submit" class="btn btn-primary" name="button">Hledej!</button>
+</form>
+<!-- refactoring: prenest tento script do business layer, nacist onload -->
+<script type="text/javascript">
+  // underlying map
+  <%- include("partials/baselayer"); -%>
+
+  const inputEl = document.querySelector("#streetlookup"); // [type='text']
+  var suggest = new SMap.Suggest(inputEl);
+  suggest.urlParams({
+    	// omezeni pro celou CR
+    	bounds: "48.5370786,12.0921668|51.0746358,18.8927040",
+      // omezeni jen na adresni body v Cesku
+      category: "address_cz"
+    });
+    //pridat validaci dat, aby ulice musela mit cislo, resp. validace vuci nasi db
+    suggest.addListener("suggest", function(suggestData) {
+        // vyber polozky z naseptavace
+        console.log(suggestData.phrase);
+      }).addListener("close", function() {
+        console.log("suggest byl zavren/skryt");
+        });
+</script>
+
+
+
+
+<%- include("partials/footer"); -%>

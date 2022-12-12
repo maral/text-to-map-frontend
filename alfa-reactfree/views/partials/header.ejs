@@ -9,10 +9,16 @@
   <link rel="stylesheet" href="./styles.css">
   <script src="https://api.mapy.cz/loader.js"></script>
   <script>
-    Loader.load()
+    Loader.load(null, {suggest:true});
   </script>
 </head>
 <body>
+  <header>
+    <nav>
+      <a href="/">Dom</a>
+      <a href="/najdiskolu">Najdi skolu</a>
+    </nav>
+  </header>
   <h1>Vizualizace spádových obvodů</h1>
   <p>Najděte svoji spádovou školu.</p>
   <p>Pracujete na úřadě? Přiřaďte dětem spádovou školu automaticky.</p>
