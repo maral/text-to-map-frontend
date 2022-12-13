@@ -8,22 +8,37 @@
     console.log(schoolCatchment, "homelog");
     // underlying map
     <%- include("partials/baselayer"); -%>
-        //deconstruct the catchment area into an array with individual homes (adress points)
-        const [homes] = schoolCatchment;
-        //create a map marker for each home
-        const markers = []; //initialize an empty set of markers
-        // iterate through the homes and create markers, add each to the marker set
-        homes.forEach((home, index) => {
-          const settings = {}; //this is for marker settings
-          const gpsCoords = SMap.Coords.fromWGS84(home.lng, home.lat);
-          const markerId = index; //unique marker identifier
-          const finalMarker = new SMap.Marker(gpsCoords, markerId, settings);  // GPS coords, unique ID, optional settings
-          markers.push(finalMarker);
-        });
-        // show the marker on the map
-        markers.forEach((marker) => {
-          layer.addMarker(marker);
-        });
+
+    const refreshZoom = () => {
+      if (map.getZoom() >= 15) {
+        layer.enable();
+      } else {
+        layer.disable();
+      }
+    }
+
+    const markers = []; //initialize an empty set of markers
+
+    schoolCatchment.forEach((homes) => {
+      //create a map marker for each home
+      // iterate through the homes and create markers, add each to the marker set
+      homes.forEach((home, index) => {
+        const settings = { url: "orange.png", anchor: { left: 4, top: 4 } }; //this is for marker settings
+        const gpsCoords = SMap.Coords.fromWGS84(home.lng, home.lat);
+        const finalMarker = new SMap.Marker(gpsCoords, null, settings);  // GPS coords, unique ID, optional settings
+        markers.push(finalMarker);
+      });
+    });
+
+
+
+    // show the marker on the map
+    layer.addMarker(markers);
+
+    var signals = map.getSignals();
+    signals.addListener(window, "zoom-stop", refreshZoom);
+
+    refreshZoom();
 
   </script>
 
