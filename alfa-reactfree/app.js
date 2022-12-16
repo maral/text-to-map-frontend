@@ -38,6 +38,28 @@ const mongoose = require("mongoose");
 const p10catchment = require("./p10data.json");
 //end of sample data
 
+// connect to MongoDB
+mongoose.connect("mongodb://0.0.0.0:27017/fruitsDB");
+
+// create a DB schema
+const addressSchema = new mongoose.Schema({
+  address: String,
+  lat: Number,
+  lng: Number,
+  orientationalNumber: Number,
+  descriptiveNumber: Number,
+  school: {
+    address: String,
+    lat: Number,
+    lng: Number,
+    orientationalNumber: Number,
+    descriptiveNumber: Number,
+  }
+});
+
+// use the schema
+const Address = mongoose.model('Address', addressSchema);
+
 const app = express();
 //set up EJS templates
 app.set('view engine', 'ejs');
@@ -51,7 +73,7 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
 app.use('/', express.static(path.join(__dirname, '/public/css')));
 
 // use internal express body parser, rather than a separate package
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended: true}));
 
 // render homepage upon calling the home route, make JSON data accessible to the home EJS template
 app.get("/", (req, res) => {
@@ -64,12 +86,45 @@ app.get("/najdiskolu", (req, res) => {
   res.render("findschool", {
     getCatchmentArea: p10catchment
   });
+
+  // const testing = new Address({
+  //   address: "Amurská č.p. 855/1",
+  //   lat: 50.0691949888393,
+  //   lng: 14.4734331760794,
+  //   orientationalNumber: 1,
+  //   descriptiveNumber: 855,
+  //   school: {
+  //     address: "Bohdalecká č.p. 1416/12",
+  //     lat: 50.0597975360719,
+  //     lng: 14.4707248215248,
+  //     orientationalNumber: 12,
+  //     descriptiveNumber: 1416
+  //   }});
+  // testing.save().then(() => console.log('item saved'));
+
 // priprava na nacteni naseptavace
   window.onload = console.log("loaded");
 });
 
+//TESTING
+const testovaciSoubor = {
+  address: "Amurská č.p. 855/1",
+  lat: 50.0691949888393,
+  lng: 14.4734331760794,
+  orientationalNumber: 1,
+  descriptiveNumber: 855,
+  school: {
+    address: "Bohdalecká č.p. 1416/12",
+    lat: 50.0597975360719,
+    lng: 14.4707248215248,
+    orientationalNumber: 12,
+    descriptiveNumber: 1416
+  }};
+
 app.post("/najdiskolu", (req, res) => {
   console.log(req.body);
+  console.log(testovaciSoubor);
+
   res.redirect("/najdiskolu");
 });
 
