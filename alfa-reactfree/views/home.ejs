@@ -3,17 +3,85 @@
   <div id="map" style="width:600px; height:400px;"></div>
 
   <script type="text/javascript">
+    const sampleSchools = [
+      {
+        name: "Základní škola, Praha 10, Gutova 1987/39, příspěvková organizace",
+        position: [ 50.0705872, 14.4925556 ],
+      },
+      {
+        name: "Základní škola Eden, Praha 10, Vladivostocká 1035/6, příspěvková organizace",
+        position: [ 50.0688133, 14.4746447 ],
+      },
+      {
+        name: "Základní škola Solidarita, Praha 10, Brigádníků 510/14, příspěvková organizace",
+        position: [ 50.0744667, 14.5008536 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Hostýnská 2100/2, příspěvková organizace",
+        position: [ 50.0798339, 14.4953281 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Nad Vodovodem 460/81, příspěvková organizace",
+        position: [ 50.0824739, 14.4985208 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Břečťanová 2919/6, příspěvková organizace",
+        position: [ 50.0547372, 14.4968042 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Olešská 2222/18, příspěvková organizace",
+        position: [ 50.0642128, 14.5113125 ],
+      },
+      {
+        name: "Základní škola Karla Čapka, Praha 10, Kodaňská 658/16, příspěvková organizace",
+        position: [ 50.0709039, 14.4570228 ],
+      },
+      {
+        name: "Základní škola, Praha 10, U Roháčových kasáren 1381/19, příspěvková organizace",
+        position: [ 50.0706558, 14.4667233 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Jakutská 1210/2, příspěvková organizace",
+        position: [ 50.0721322, 14.4726611 ],
+      },
+      {
+        name: "Základní škola, Praha 10, U Vršovického nádraží 950/1, příspěvková organizace",
+        position: [ 50.0667953, 14.4478722 ],
+      },
+      {
+        name: "Základní škola, Praha 10, V Rybníčkách 1980/31, příspěvková organizace",
+        position: [ 50.0709686, 14.5062819 ],
+      },
+      {
+        name: "Základní škola, Praha 10, Švehlova 2900/12, příspěvková organizace",
+        position: [ 50.0586931, 14.5085783 ],
+      },
+    ]
     // initialize
-    var schoolCatchment = <%- JSON.stringify(getCatchmentArea) %>;
+    const schoolCatchment = <%- JSON.stringify(getCatchmentArea); %>;
     console.log(schoolCatchment, "homelog");
     // underlying map
-    <%- include("partials/baselayer"); -%>
+
+    // create the underlying layer with the actual map
+    const center = SMap.Coords.fromWGS84(14.4734721275829, 50.0698471052258); //default map center
+    const map = new SMap(JAK.gel("map"), center, 15); //this number is the zoom level - higher number means closer zoom
+    map.addDefaultLayer(SMap.DEF_BASE).enable();
+    map.addDefaultControls();
+
+    // create and enable a marker layer on the map
+    const markerLayer = new SMap.Layer.Marker();
+    map.addLayer(markerLayer);
+
+    const schoolLayer = new SMap.Layer.Marker();
+    map.addLayer(schoolLayer);
+    schoolLayer.enable();
+    schoolLayer.addMarker(sampleSchools.map(school => new SMap.Marker(SMap.Coords.fromWGS84(school.position[1], school.position[0]), null, {title: school.name})));
 
     const refreshZoom = () => {
       if (map.getZoom() >= 15) {
-        layer.enable();
+        markerLayer.enable();
       } else {
-        layer.disable();
+        markerLayer.disable();
       }
     }
 
@@ -33,7 +101,7 @@
 
 
     // show the marker on the map
-    layer.addMarker(markers);
+    markerLayer.addMarker(markers);
 
     var signals = map.getSignals();
     signals.addListener(window, "zoom-stop", refreshZoom);
