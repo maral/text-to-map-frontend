@@ -3,6 +3,28 @@
   <div id="map" style="width:600px; height:400px;"></div>
 
   <script type="text/javascript">
+    const createSchoolMarker = (school) => {
+      const marker = new SMap.Marker(SMap.Coords.fromWGS84(school.position[1], school.position[0]), null, {title: school.name});
+      var card = new SMap.Card();
+      card.getHeader().innerHTML = `<strong>${school.name}</strong>`;
+      card.getHeader().setAttribute("style", "border-bottom: 0 !important;");
+      card.getBody().remove();
+      card.getFooter().remove();
+      marker.decorate(SMap.Marker.Feature.Card, card);
+      return marker;
+    };
+
+    const images = [
+      "green.png",
+      "orange.png",
+      "black.png",
+      "yellow.png",
+      "blue.png",
+      "purple.png",
+      "brown.png",
+      "pink.png",
+    ];
+    
     const sampleSchools = [
       {
         name: "Základní škola, Praha 10, Gutova 1987/39, příspěvková organizace",
@@ -75,7 +97,7 @@
     const schoolLayer = new SMap.Layer.Marker();
     map.addLayer(schoolLayer);
     schoolLayer.enable();
-    schoolLayer.addMarker(sampleSchools.map(school => new SMap.Marker(SMap.Coords.fromWGS84(school.position[1], school.position[0]), null, {title: school.name})));
+    schoolLayer.addMarker(sampleSchools.map(createSchoolMarker));
 
     const refreshZoom = () => {
       if (map.getZoom() >= 15) {
@@ -87,15 +109,18 @@
 
     const markers = []; //initialize an empty set of markers
 
+    let imageIndex = 0;
     schoolCatchment.forEach((homes) => {
       //create a map marker for each home
       // iterate through the homes and create markers, add each to the marker set
       homes.forEach((home, index) => {
-        const settings = { url: "orange.png", anchor: { left: 4, top: 4 } }; //this is for marker settings
+        const settings = { url: images[imageIndex % images.length], anchor: { left: 4, top: 4 } }; //this is for marker settings
         const gpsCoords = SMap.Coords.fromWGS84(home.lng, home.lat);
         const finalMarker = new SMap.Marker(gpsCoords, null, settings);  // GPS coords, unique ID, optional settings
         markers.push(finalMarker);
       });
+
+      imageIndex++;
     });
 
 
