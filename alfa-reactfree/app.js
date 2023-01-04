@@ -27,7 +27,7 @@
 // spit out an array
 // plot the array on a txt, pdf - each array object in one line
 
-require('dotenv').config()
+require('dotenv').config();
 const express = require("express");
 const path = require("path");
 const { JSDOM } = require("jsdom");
@@ -118,15 +118,8 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/najdiskolu", (req, res) => {
-  res.render("findschool", {
-    getCatchmentArea: p10catchment,
-  });
-  // priprava na nacteni naseptavace
-  window.onload = console.log("loaded");
-});
-
 //TESTING
+let queryStreet = "";
 const testovaciSoubor = {
   address: "Amurská č.p. 855/1",
   lat: 50.0691949888393,
@@ -142,10 +135,26 @@ const testovaciSoubor = {
   }};
   // testing.save().then(() => console.log('item saved'));
 
-app.post("/najdiskolu", (req, res) => {
-  console.log(req.body);
-  console.log(testovaciSoubor);
+app.get("/najdiskolu", (req, res) => {
+  res.render("findschool", {
+    getCatchmentArea: p10catchment,
+    skolaUlice: testovaciSoubor,
+    ulice: queryStreet
+  });
+  // priprava na nacteni naseptavace
+  window.onload = console.log("loaded");
+});
 
+// a call to retrieve a school based on address
+app.post("/najdiskolu", (req, res) => {
+  // geocode using Mapy.api
+    // show marker on the map
+    // retrieve lan and long
+    // find lat and long from our db testovaciSoubor.lat && testovaciSoubor.lng
+    // find lat and long of the school testovaciSoubor.school
+    // geocode on the map
+    queryStreet = req.body.ulice;
+    console.log(queryStreet);
   res.redirect("/najdiskolu");
 });
 
