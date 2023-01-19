@@ -12,9 +12,10 @@
 <!-- map frame - repetitive -->
 <div id="map" style="width:300px; height:200px;"></div>
 
-<form class="hledejskolu" id="findSchool" action="/najdiskolu" method="post">
+<form onsubmit="doSubmit()" class="hledejskolu" name="findSchoolForm" id="findSchool" action="/najdiskolu" method="post">
   <label>Zadejte ulici</label>
-  <input class="form-control" value="" type="text" name="ulice" placeholder="Sem zadejte ulici a číslo" id="streetlookup">
+  <input type="hidden" name="cleanStreetValue" value="10000" />
+  <input class="form-control" value="" type="text" name="rawStreetValue" placeholder="Sem zadejte ulici a číslo" id="streetlookup">
   <button type="submit" class="btn btn-primary" name="button">Hledej!</button>
 </form>
 <!-- refactoring: prenest tento script do business layer, nacist onload -->
@@ -43,13 +44,45 @@
     console.log("suggest byl zavren/skryt");
   });
 
+  function doSubmit() {
+    const testing = document.findSchoolForm.rawStreetValue.value;
+    const para = document.createElement("p");
+    para.innerHTML = "This is " + testing;
+    document.getElementById("findSchool").appendChild(para);
+
+  // GEOCODE
+  const streetEntered = testing; // parse a street address that someone entered into the form on the website
+  const lookUp = new SMap.Geocoder(streetEntered, (result) => {
+    const geocodedLocations = result.getResults()[0].results;
+    // ADD A CONDITIONAL HERE - what to do if there is 0 or more than 1 results... show an alert
+    const [firstAddress, ...otherResults] = geocodedLocations;
+    document.findSchoolForm.cleanStreetValue.value = firstAddress.label;
+    console.log("clean stret val during " + document.findSchoolForm.cleanStreetValue.value);
+    // create and enable a marker layer on the map
+    const addressLayer = new SMap.Layer.Marker();
+    map.addLayer(addressLayer);
+    addressLayer.enable();
+    // add marker showing the address the user searched for
+    const markers = [] //initialize an empty set of markers
+    const settings = {}; //marker settings
+    const gpsCoords = SMap.Coords.fromWGS84(firstAddress.coords.x, firstAddress.coords.y);
+    map.setCenter(gpsCoords); //set new center to the GPS coordinates of the addressed that the user entered... eventually use coordinates of the school instead
+    const searchedAddress = new SMap.Marker(gpsCoords, null, settings);
+    markers.push(searchedAddress);
+    addressLayer.addMarker(markers); //show the marker on the map
+    console.log(firstAddress.label);
+    document.getElementById("findSchool").submit();
+  });
+  event.preventDefault();
+  }
+
   // GEOCODE
   const streetEntered = <%- JSON.stringify(ulice) %>; // parse a street address that someone entered into the form on the website
   const lookUp = new SMap.Geocoder(streetEntered, (result) => {
     const geocodedLocations = result.getResults()[0].results;
     // ADD A CONDITIONAL HERE - what to do if there is 0 or more than 1 results... show an alert
     const [firstAddress, ...otherResults] = geocodedLocations;
-    console.log(firstAddress);
+    // console.log(firstAddress);
     // create and enable a marker layer on the map
     const addressLayer = new SMap.Layer.Marker();
     map.addLayer(addressLayer);
@@ -65,6 +98,6 @@
   });
 </script>
 
-<p><%= ulice %></p>
+<p>ulice z EJS <%= ulice %></p>
 
 <%- include("partials/footer"); -%>

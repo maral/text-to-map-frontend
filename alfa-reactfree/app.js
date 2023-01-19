@@ -153,7 +153,7 @@ app.post("/najdiskolu", (req, res) => {
     // find lat and long from our db testovaciSoubor.lat && testovaciSoubor.lng
     // find lat and long of the school testovaciSoubor.school
     // geocode on the map
-    queryStreet = req.body.ulice;
+    queryStreet = req.body.cleanStreetValue;
     console.log(queryStreet);
   res.redirect("/najdiskolu");
 });
