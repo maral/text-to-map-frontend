@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+      integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+      crossorigin=""/>
+    <link rel="stylesheet" href="carte.css"/>
+    <style>
+      #map {
+        height: 100vh;
+        width: 100wh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map" class="cartes">
+      <div class="legend geometry top center hide">
+        <div class="wrapper">
+          <div class="content"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+      crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.1.4/dist/pixi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-pixi-overlay@1.9.4/L.PixiOverlay.min.js"></script>
+    <script src="tools.min.js"></script>
+    <script>
+      (async () => {
+        const Assets = PIXI.Assets;
+        // const templateShape = new PIXI.Graphics()
+        //   .beginFill(0xffffff)
+        //   .lineStyle({ width: 1, color: 0x333333, alignment: 0 })
+        //   .drawCircle(0, 0, 20);
+        // const texture = PIXI.RenderTexture.create({
+        //   width: templateShape.width,
+        //   height: templateShape.height,
+        // });
+        const texture = await Assets.load('pink.png')
+        fetch('./p10data.json').then(response => response.json()).then(json => {
+          const map = L.map('map').setView([50.08804, 14.42076], 12);
+          L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            minZoom: 6,
+            maxZoom: 18
+          }).addTo(map);
+          map.attributionControl.setPosition('bottomleft');
+          map.zoomControl.setPosition('bottomright');
+          const legend = document.querySelector('div.legend.geometry');
+          const legendContent = legend.querySelector('.content');
+          const pixiLayer = (() => {
+            let firstDraw = true;
+            let prevZoom;
+            const markerSprites = [];
+            let frame = null;
+            let focus = null;
+            const pixiContainer = new PIXI.Container();
+            const doubleBuffering = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            return L.pixiOverlay(function (utils) {
+              const zoom = utils.getMap().getZoom();
+              if (frame) {
+                cancelAnimationFrame(frame);
+                frame = null;
+              }
+              const container = utils.getContainer();
+              const renderer = utils.getRenderer();
+              const project = utils.latLngToLayerPoint;
+              const scale = utils.getScale();
+              if (firstDraw) {
+                prevZoom = zoom;
+                let total = 0;
+                json.forEach(school => {
+                  const tint = parseInt(Math.floor(Math.random() * 16777215).toString(16), 16);
+                  school.forEach(point => {
+                    for (let i = 0; i < 50; i++) {
+                      total++;
+                      const coords = project([point.lat + 0.01 * i, point.lng + 0.01 * i]);
+                      const index = 0;
+                      const markerSprite = new PIXI.Sprite(texture);
+                      markerSprite.textureIndex = index;
+                      markerSprite.x = coords.x;
+                      markerSprite.y = coords.y;
+                      markerSprite.anchor.set(0.5, 0.5);
+                      markerSprite.tint = tint;
+                      container.addChild(markerSprite);
+                      markerSprites.push(markerSprite);
+                      markerSprite.legend = point.address;
+                    }
+                  });
+                });
+                console.log(total);
+                
+                const self = this;
+              }
+              if (firstDraw || prevZoom !== zoom) {
+                const invScale = Math.min(0.0625, (1 / scale) * (scale <= 4 ? 0.5 : 1));
+                markerSprites.forEach((markerSprite) => {
+                  markerSprite.scale.set(invScale);
+                });
+                console.log(invScale);
+              }
+              firstDraw = false;
+              prevZoom = zoom;
+              renderer.render(container);
+            }, pixiContainer, {
+              doubleBuffering: doubleBuffering,
+              destroyInteractionManager: true
+            });
+          })();
+
+          pixiLayer.addTo(map);
+        });
+      })();
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+  </body>
+</html>

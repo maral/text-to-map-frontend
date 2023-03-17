@@ -34,57 +34,9 @@ const { JSDOM } = require("jsdom");
 const { window } = new JSDOM("");
 const $ = require("jquery")(window);
 const ejs = require("ejs");
-// mongodb
-const mongoose = require("mongoose");
-// mysql
-const mysql = require("mysql2");
 //sample data here
 const p10catchment = require("./p10data.json");
 //end of sample data
-
-// connect to MongoDB
-mongoose.connect("mongodb://0.0.0.0:27017/fruitsDB");
-
-//connect to MySQL
-const connection = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  // database: process.env.DB
-});
-
-connection.connect();
-
-connection.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  }
-
-  console.log('connected as id ' + connection.threadId);
-});
-
-connection.end();
-
-
-// create a DB schema
-const addressSchema = new mongoose.Schema({
-  address: String,
-  lat: Number,
-  lng: Number,
-  orientationalNumber: Number,
-  descriptiveNumber: Number,
-  school: {
-    address: String,
-    lat: Number,
-    lng: Number,
-    orientationalNumber: Number,
-    descriptiveNumber: Number,
-  }
-});
-
-// use the schema
-const Address = mongoose.model('Address', addressSchema);
 
 const app = express();
 //set up EJS templates
