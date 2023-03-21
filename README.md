@@ -78,3 +78,5 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
 ## Plán rozvoje aplikace
 
 Plán vývoje máme v [Google dokumentu](https://docs.google.com/document/d/1sjGZ1A5HMstfswkfi0Ga_cqPYzA_yTKqIlUZTuGadqI/edit?usp=sharing).
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E5JOMLT)
