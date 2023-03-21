@@ -2,7 +2,7 @@
 Text To Map usiluje o lepší, strojově zpracovatelné využití částí vyhlášek s výčtem ulic a dalších lokací. Jde o rozšiřitelnou sadu konceptů a nástrojů, které zajistí hladký převod výčtu ulic a jejich rozsahů v lidsky srozumitelném jazyce do strojově zpracovatelného, uchopitelného formátu.
 
 ## Odkazy
-- [text-to-map](https://github.com/maral/text-to-map) - knihovna pro generování JSON dat z vyhlášek
+- [text-to-map](https://github.com/maral/text-to-map) - knihovna pro generování JSON dat z vyhlášek (srdce projektu)
 
 ## Živě na webu
 - [Spádové oblasti - Praha](https://mareklisy.cz/spadovosti-praha/)
