@@ -1,6 +1,13 @@
 # Text To Map
 Text To Map usiluje o lepší, strojově zpracovatelné využití částí vyhlášek s výčtem ulic a dalších lokací. Jde o rozšiřitelnou sadu konceptů a nástrojů, které zajistí hladký převod výčtu ulic a jejich rozsahů v lidsky srozumitelném jazyce do strojově zpracovatelného, uchopitelného formátu.
 
+## Odkazy
+- [text-to-map](https://github.com/maral/text-to-map) - knihovna pro generování JSON dat z vyhlášek
+
+## Živě na webu
+- [Spádové oblasti - Praha](https://mareklisy.cz/spadovosti-praha/)
+- [Spádové oblasti - Česká Lípa](https://mareklisy.cz/spadovosti-praha/cl.html)
+
 ## Jak to začalo?
 Ze strojově nezpracovatelných dat pražských spádových obvodů jsme vytvořili lidsky i strojově čitelný formát ("Street Markdown") velmi podobný tomu, co už dnes ve spádové vyhlášce hl. m. Prahy existuje. Většinu vyhlášky jsme pročistili a do tohoto formátu převedli a díky tomu je možné tato data dále vizualizovat a dále zpracovávat.
 
@@ -13,12 +20,12 @@ Nabízí se řada využití těchto dat:
 - zobrazení demografických výhledů na dalších roky
 
 ## Co je ambicí tohoto projektu?
-Hlavním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) a tím motivovat úředníky, aby psali spádovosti ve Street Markdownu a vyhlášky tak byly snadno strojově zpracovatelné. V nejlepším případě by pak byly spádovosti spravovány na jednom místě (např. v gesci MŠMT) přímo ve strojově zpracovatelném formátu a byly dostupné v podobě otevřených dat. V tu chvíli by bylo možné využívat všechny související nástroje pro celou ČR.
+Hlavním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) V blízké budoucnosti budou spádovosti spravovány na jednom místě (v gesci MŠMT) přímo ve strojově zpracovatelném formátu a budou dostupné v podobě otevřených dat.
 
 Dalším budoucím potenciálním cílem je rozšíření principu text-to-map a formátu Street Markdown pro další způsoby využití (viz níže).
 
 ## Street Markdown
-Street Markdown je formát, který po vzoru značkovacího jazyka [Markdown](https://en.wikipedia.org/wiki/Markdown) má za cíl usnadnit psaní strukturovaných dat bez nutnosti učit se složité formátovací tagy nebo používat speciální znaky. Vznikl na základě [pražské spádové vyhlášky z roku 2022](https://www.praha.eu/file/3251117/vyhlaska_c._4.pdf) a snaží se být co nejkompatibilnější s již používaným formátem.
+Street Markdown je formát, který po vzoru značkovacího jazyka [Markdown](https://en.wikipedia.org/wiki/Markdown) má za cíl usnadnit psaní strukturovaných dat bez nutnosti učit se složité formátovací tagy nebo používat speciální znaky. Vznikl na základě [pražské spádové vyhlášky z roku 2021](https://www.praha.eu/file/3251117/vyhlaska_c._4.pdf) a snaží se být co nejkompatibilnější s již používaným formátem.
 
 Street Markdown je dále možný rozšiřovat pro další případy použití - například protialkoholová vyhláška (do standardu by byla třeba přidat definice parků), tržní vyhláška, vyhláška o buskingu a další.
 
@@ -65,15 +72,8 @@ Street Markdown je dále možný rozšiřovat pro další případy použití - 
                 * b) číslo-číslo, např. 2-66 (přípustné jsou pomlčka, spojovník, minus)
                 * c) (od) "číslo" (a) výše, např. od 20 výše, 14 a výše, od 7 a výše
             * např. 1-9, 11, od 23 výše
-* aktuální regexp pro validaci jednoho řádku s adresou:
+* regexp pro validaci jednoho řádku s adresou:
      * _^([^ –,-]+([ –-][^ ,–-]+)*)( [–-] (lichá č.|sudá č.|č.|č. p.)( (\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?)((, ?| ?a ?)(\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?))*)?((, ?| ?a ?)(lichá č.|sudá č.|č.|č. p.)( (\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?)((, ?| ?a ?)(\d+[a-zA-Z]? ?[–-] ?\d+[a-zA-Z]?|(od )?\d+[a-zA-Z]?( a)? výše|\d+[a-zA-Z]?))*)?)*)?$_
-
-
-### Aktuální problémy SMD
-* chybí podpora negativního vymezení, např. "Purkyňova - mimo č. 27"
-    * bylo by možné použít, ale v případě více pravidel může dojít k překryvům / logickým dírám, nešlo by je např. použít v jednoduchém vzorci v tabulkovém procesoru
-    * je třeba podrobněji rozmyslet
-* orientační čísla mívají u sebe také písmena, tím pádem rozsahy nemusí obsahovat čistý datový typ integer, ale kombinaci čísla a písmene - jde o minimum případů, ale vyhodnocení je tím pádem o dost složitější
 
 ## Plán rozvoje aplikace
 
