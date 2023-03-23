@@ -8,52 +8,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
       integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
       crossorigin=""/>
-    <style>
-      #map {
-        height: 100vh;
-      }
-
-      #about {
-        position: absolute;
-        top: 0;
-        right: 60px;
-        margin: 10px;
-        z-index: 999;
-        text-align: right;
-      }
-
-      #about .tag {
-        background-color: white;
-        padding: 10px;
-        border-radius: 5px;
-        border: 2px solid rgba(0,0,0,0.4);
-        display: inline-block;
-      }
-      
-      #about .collapsed {
-        background-color: white;
-        max-width: 300px;
-        margin-top: 5px;
-        padding: 20px;
-        border-radius: 5px;
-        border: 2px solid rgba(0,0,0,0.4);
-        display: none;
-        opacity: 0;
-        transition: opacity 0.5s;
-      }
-
-      #about:hover .collapsed {
-        display: block;
-        opacity: 1;
-      }
-
-      #about .collapsed p:last-child {
-        margin-bottom: 0;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="map"></div>
+
+    <div id="suggest">
+      <input type="text" value="" placeholder="Zadejte adresu" class="form-control" />
+    </div>
 
     <div id="about">
       <div class="tag">o projektu</div>
@@ -66,85 +28,20 @@
       </div>
     </div>
 
+    <div id="alert" class="alert alert-warning" role="alert"></div>
+
 
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
       integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
       crossorigin=""></script>
+    <script type="text/javascript" src="https://api.mapy.cz/loader.js"></script>
+    <script type="text/javascript">Loader.load(null, {suggest: true});</script>
+    <script src="script.js"></script>
     <script>
-      const colors = ["198db3","028090","81b2e9","6279bd","c686d0","c77198","f45b69","f17b5a","c45a18"];
-      const map = L.map("map");
-      L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'}).addTo(map);
-
-      map.setView([50.0874286, 14.4212811], 14);
-
-      const myRenderer = L.canvas({ padding: 0.5 });
-      const districtLayerGroups = [];
-      const layerGroupsForControl = {};
-      const schoolsLayerGroup = L.layerGroup().addTo(map);
-
-      fetch('./praha.json?2023-03-02-2012').then(response => {
-        response.json().then(json => {
-          let colorIndex = 0;
-          json.forEach(district => {
-            let layerGroup = L.layerGroup().addTo(map);
-            layerGroupsForControl[district.municipalityName] = layerGroup;
-            districtLayerGroups.push(layerGroup);
-            district.schools.forEach(school => {
-              L.circle([school.position.lat, school.position.lng], {
-                renderer: myRenderer,
-                radius: 15,
-                fill: true,
-                fillColor: '#' + colors[colorIndex % colors.length],
-                fillOpacity: 1,
-                weight: 8,
-                color: '#' + colors[colorIndex % colors.length]
-              }).bindPopup(school.name).addTo(schoolsLayerGroup);
-              school.addresses.forEach(point => {
-                if (!point.lat || !point.lng) {
-                  console.log(point);
-                  return;
-                }
-                layerGroup.addLayer(
-                  L.circle([point.lat, point.lng], {
-                    renderer: myRenderer,
-                    radius: 4,
-                    fill: true,
-                    fillColor: '#' + colors[colorIndex % colors.length],
-                    fillOpacity: 1,
-                    color: '#' + colors[colorIndex % colors.length]
-                  }).bindPopup(point.address)
-                );
-              });
-              colorIndex++;
-            });
-          });
-          layerGroupsForControl["Školy"] = schoolsLayerGroup;
-          L.control.layers(null, layerGroupsForControl).addTo(map);
-
-          let added = true;
-          const minZoomForAddressPoints = 15;
-          zoomend = function () {
-            console.log("zoomend: " + map.getZoom());
-            if (map.getZoom() < minZoomForAddressPoints && added === true) {
-              console.log("removing");
-              districtLayerGroups.forEach(layerGroup => {
-                map.removeLayer(layerGroup);
-              });
-              added = false;
-            }
-            if (map.getZoom() >= minZoomForAddressPoints && added === false) {
-              console.log("adding");
-              districtLayerGroups.forEach(layerGroup => {
-                map.addLayer(layerGroup);
-              });
-              added = true;
-            }
-          };
-          map.on('zoomend', zoomend);
-          zoomend();
-        });
-      });
+      loadMapyCzSuggest();
+      createMap("./praha.json?2023-03-22-0000", [50.0874286, 14.4212811], 14);
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-65998321-1"></script>
