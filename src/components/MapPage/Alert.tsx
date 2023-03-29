@@ -6,7 +6,7 @@ export interface AlertProps {
   visible: boolean;
 }
 
-export default ({ message, visible }: AlertProps) => {
+export default function Alert({ message, visible }: AlertProps) {
   const alertRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default ({ message, visible }: AlertProps) => {
         alertDiv.style.display = "none";
       }, 500);
     }
-  }, [visible]);
+  }, [message, visible]);
   return (
     <div
       ref={alertRef}
@@ -32,4 +32,4 @@ export default ({ message, visible }: AlertProps) => {
       {message}
     </div>
   );
-};
+}

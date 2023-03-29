@@ -13,14 +13,14 @@ interface CatchmentAreaMapProps {
   onError?: (message: string) => void;
 }
 
-export default memo(
-  function CatchmentAreaMap({
+const CatchmentAreaMap = memo(
+  ({
     municipalities,
     center,
     zoom,
     suggestInput,
     onError,
-  }: CatchmentAreaMapProps) {
+  }: CatchmentAreaMapProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       console.log("useEffect createMap");
@@ -61,3 +61,7 @@ export default memo(
     );
   }
 );
+
+CatchmentAreaMap.displayName = "CatchmentAreaMap";
+
+export default CatchmentAreaMap;

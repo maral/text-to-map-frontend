@@ -6,9 +6,12 @@ import {
 import { GetStaticProps, GetStaticPaths } from "next";
 import { Municipality } from "@/types/data";
 
-export default ({ municipalities }: MunicipalityPageProps) => {
+const MunicipalityPage = ({ municipalities }: MunicipalityPageProps) => {
   return <MapPage municipalities={municipalities} />;
 };
+MunicipalityPage.displayName = "[municipality]";
+
+export default MunicipalityPage;
 
 interface MunicipalityPageProps {
   municipalities: Municipality[];

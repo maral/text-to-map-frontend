@@ -3,9 +3,12 @@ import { getSchoolSlugsList, loadSchoolData } from "@/utils/dataCache";
 import { GetStaticProps, GetStaticPaths } from "next";
 import { Municipality } from "@/types/data";
 
-export default ({ municipalities }: SchoolPageProps) => {
+const SchoolPage = ({ municipalities }: SchoolPageProps) => {
   return <MapPage municipalities={municipalities} />;
 };
+SchoolPage.displayName = "SchoolPage";
+
+export default SchoolPage;
 
 interface SchoolPageProps {
   municipalities: Municipality[];

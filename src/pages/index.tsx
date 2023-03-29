@@ -3,9 +3,9 @@ import { Municipality } from "@/types/data";
 import { getAllData } from "@/utils/dataCache";
 import MapPage from "@/components/MapPage/MapPage";
 
-export default ({ municipalities }: MunicipalityPageProps) => {
+export default function IndexPage({ municipalities }: MunicipalityPageProps) {
   return <MapPage municipalities={municipalities} />;
-};
+}
 
 interface MunicipalityPageProps {
   municipalities: Municipality[];

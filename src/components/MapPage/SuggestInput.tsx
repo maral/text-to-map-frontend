@@ -1,6 +1,6 @@
 import { forwardRef, HTMLProps } from "react";
 
-export default forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
+const SuggestInput = forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
   (props, ref) => {
     return (
       <input
@@ -14,3 +14,7 @@ export default forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement>>(
     );
   }
 );
+
+SuggestInput.displayName = "SuggestInput";
+
+export default SuggestInput;

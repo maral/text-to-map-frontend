@@ -3,11 +3,11 @@ export interface AboutLinksProps {
   prependText?: string;
 }
 
-export default ({
+export default function AboutLink({
   url,
   prependText,
   children,
-}: React.PropsWithChildren<AboutLinksProps>) => {
+}: React.PropsWithChildren<AboutLinksProps>) {
   return (
     <li>
       {prependText && (
@@ -20,4 +20,4 @@ export default ({
       </a>
     </li>
   );
-};
+}

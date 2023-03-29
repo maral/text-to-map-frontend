@@ -13,7 +13,7 @@ export interface MapPageProps {
   municipalities: Municipality[];
 }
 
-export default ({ municipalities }: MapPageProps) => {
+export default function MapPage({ municipalities }: MapPageProps) {
   const [alertMessage, setAlertMessage] = React.useState("");
   const [alertVisible, setAlertVisible] = React.useState(false);
 
@@ -29,7 +29,7 @@ export default ({ municipalities }: MapPageProps) => {
   console.log("inputRef", inputRef);
   useEffect(() => {
     console.log("useEffect inputRef", inputRef);
-  }, [inputRef.current]);
+  }, [inputRef]);
 
   const Map = React.useMemo(
     () =>
@@ -93,4 +93,4 @@ export default ({ municipalities }: MapPageProps) => {
       </main>
     </>
   );
-};
+}
