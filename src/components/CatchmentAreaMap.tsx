@@ -4,57 +4,48 @@ import styles from "@/styles/CatchmentAreaMap.module.css";
 import { memo, RefObject, useEffect, useRef } from "react";
 import { createMap, loadMapyCzSuggest } from "@/scripts/createMap";
 import Script from "next/script";
+import useQueryParams from "@/hooks/useQueryParams";
 
 interface CatchmentAreaMapProps {
   municipalities: Municipality[];
-  center: [number, number];
-  zoom: number;
-  suggestInput: RefObject<HTMLInputElement>;
+  suggestInput?: RefObject<HTMLInputElement>;
   onError?: (message: string) => void;
 }
 
 const CatchmentAreaMap = memo(
-  ({
-    municipalities,
-    center,
-    zoom,
-    suggestInput,
-    onError,
-  }: CatchmentAreaMapProps) => {
+  ({ municipalities, suggestInput, onError }: CatchmentAreaMapProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
+    const { center, zoom, isReady } = useQueryParams();
+
     useEffect(() => {
       console.log("useEffect createMap");
-      if (mapRef.current) {
+      if (mapRef.current && isReady) {
         createMap(mapRef.current, municipalities, center, zoom);
       }
-    }, [municipalities, center, zoom]);
-    useEffect(() => {
-      console.log(suggestInput);
-    }, [suggestInput]);
+    }, [municipalities, center, zoom, isReady]);
+
     return (
       <>
         <div ref={mapRef} className={styles.map} />
-        <Script
-          src="https://api.mapy.cz/loader.js"
-          onLoad={() => {
-            // @ts-ignore
-            Loader.async = true;
-            // @ts-ignore
-            Loader.load(null, { suggest: true }, () => {
-              console.log("Mapy.cz loaded");
-              console.log("suggestInput", suggestInput);
-              console.log("onError", onError);
-              if (suggestInput.current && onError) {
-                loadMapyCzSuggest(suggestInput.current, onError);
-              }
-            });
-          }}
-        />
+        {suggestInput && (
+          <Script
+            src="https://api.mapy.cz/loader.js"
+            onLoad={() => {
+              // @ts-ignore
+              Loader.async = true;
+              // @ts-ignore
+              Loader.load(null, { suggest: true }, () => {
+                if (suggestInput.current && onError) {
+                  loadMapyCzSuggest(suggestInput.current, onError);
+                }
+              });
+            }}
+          />
+        )}
       </>
     );
   },
   (prevProps: CatchmentAreaMapProps, nextProps: CatchmentAreaMapProps) => {
-    console.log("CatchmentAreaMap memo", prevProps, nextProps);
     return (
       prevProps.municipalities === nextProps.municipalities &&
       prevProps.suggestInput === nextProps.suggestInput

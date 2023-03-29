@@ -5,9 +5,12 @@ import {
 } from "@/utils/dataCache";
 import { GetStaticProps, GetStaticPaths } from "next";
 import { Municipality } from "@/types/data";
+import { PageType } from "@/types/page";
 
 const MunicipalityPage = ({ municipalities }: MunicipalityPageProps) => {
-  return <MapPage municipalities={municipalities} />;
+  return (
+    <MapPage municipalities={municipalities} pageType={PageType.Municipality} />
+  );
 };
 MunicipalityPage.displayName = "[municipality]";
 
@@ -28,7 +31,10 @@ export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
   }
 
   const municipalityId = context.params.municipality as string;
+  const color = context.params.color as string;
   const municipality = loadMunicipalityData(municipalityId);
+
+  console.log("color", color);
 
   if (!municipality) {
     return {

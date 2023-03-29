@@ -8,12 +8,17 @@ import Loading from "@/components/Loading";
 import AboutLink from "./AboutLink";
 import SuggestInput from "./SuggestInput";
 import Alert from "./Alert";
+import useQueryParams from "@/hooks/useQueryParams";
+import { PageType } from "@/types/page";
 
 export interface MapPageProps {
   municipalities: Municipality[];
+  pageType: PageType;
 }
 
-export default function MapPage({ municipalities }: MapPageProps) {
+export default function MapPage({ municipalities, pageType }: MapPageProps) {
+  const { showSearch, showMenu } = useQueryParams(pageType);
+
   const [alertMessage, setAlertMessage] = React.useState("");
   const [alertVisible, setAlertVisible] = React.useState(false);
 
@@ -26,7 +31,7 @@ export default function MapPage({ municipalities }: MapPageProps) {
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log("inputRef", inputRef);
+
   useEffect(() => {
     console.log("useEffect inputRef", inputRef);
   }, [inputRef]);
@@ -49,45 +54,47 @@ export default function MapPage({ municipalities }: MapPageProps) {
         <link rel="icon" href="/favicon.png" />
       </Head>
       <main>
-        <div className={styles.suggest}>
-          <SuggestInput ref={inputRef} />
-        </div>
+        {showSearch && (
+          <div className={styles.suggest}>
+            <SuggestInput ref={inputRef} />
+          </div>
+        )}
 
         <Map
           municipalities={municipalities}
-          center={[50.0874286, 14.4212811]}
-          zoom={14}
-          suggestInput={inputRef}
+          suggestInput={showSearch ? inputRef : undefined}
           onError={showAlert}
         />
 
-        <div className={styles.about}>
-          <div className={styles.tag}>o projektu</div>
-          <ul className={styles.collapsed}>
-            <AboutLink url="https://github.com/maral/text-to-map-frontend">
-              Github
-            </AboutLink>
-            <AboutLink url="https://twitter.com/LisyMarek/status/1637777860181016581">
-              Vlákno o projektu
-            </AboutLink>
-            <AboutLink url="praha.json">
-              JSON s adresními místy ke stažení
-            </AboutLink>
-            <AboutLink
-              url="mailto:marek.lisy.hk@gmai.com"
-              prependText="Chcete mapu spádových oblastí i pro vaše město?"
-            >
-              Napište mi
-            </AboutLink>
-            <li>
-              <KofiButton
-                kofiID="E1E5JOMLT"
-                color="#29abe0"
-                title="Buy me a coffee"
-              ></KofiButton>
-            </li>
-          </ul>
-        </div>
+        {showMenu && (
+          <div className={styles.about}>
+            <div className={styles.tag}>o projektu</div>
+            <ul className={styles.collapsed}>
+              <AboutLink url="https://github.com/maral/text-to-map-frontend">
+                Github
+              </AboutLink>
+              <AboutLink url="https://twitter.com/LisyMarek/status/1637777860181016581">
+                Vlákno o projektu
+              </AboutLink>
+              <AboutLink url="praha.json">
+                JSON s adresními místy ke stažení
+              </AboutLink>
+              <AboutLink
+                url="mailto:marek.lisy.hk@gmai.com"
+                prependText="Chcete mapu spádových oblastí i pro vaše město?"
+              >
+                Napište mi
+              </AboutLink>
+              <li>
+                <KofiButton
+                  kofiID="E1E5JOMLT"
+                  color="#29abe0"
+                  title="Buy me a coffee"
+                ></KofiButton>
+              </li>
+            </ul>
+          </div>
+        )}
 
         <Alert message={alertMessage} visible={alertVisible} />
       </main>

@@ -2,9 +2,10 @@ import MapPage from "@/components/MapPage/MapPage";
 import { getSchoolSlugsList, loadSchoolData } from "@/utils/dataCache";
 import { GetStaticProps, GetStaticPaths } from "next";
 import { Municipality } from "@/types/data";
+import { PageType } from "@/types/page";
 
 const SchoolPage = ({ municipalities }: SchoolPageProps) => {
-  return <MapPage municipalities={municipalities} />;
+  return <MapPage municipalities={municipalities} pageType={PageType.School} />;
 };
 SchoolPage.displayName = "SchoolPage";
 

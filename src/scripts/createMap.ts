@@ -5,6 +5,8 @@ import L, {
   LayerGroup,
   CircleMarker,
   LatLngBounds,
+  PopupEvent,
+  Popup,
 } from "leaflet";
 
 const colors = [
@@ -23,6 +25,14 @@ interface CircleMarkerWithSchool extends CircleMarker {
   school?: CircleMarkerWithSchool;
 }
 
+interface PopupWithMarker extends Popup {
+  marker: CircleMarkerWithSchool;
+}
+
+const isPopupWithMarker = (popup: Popup): popup is PopupWithMarker => {
+  return popup.hasOwnProperty("marker");
+};
+
 type MarkerMap = { [key: string]: CircleMarkerWithSchool };
 type AddressLayerGroup = LayerGroup<CircleMarkerWithSchool>;
 type SchoolLayerGroup = LayerGroup<CircleMarker>;
@@ -33,6 +43,7 @@ let map: LeafletMap;
 let selectedMarker: CircleMarkerWithSchool;
 let selectedMarkerOriginalColor: string;
 let polyline: Polyline;
+let lastListener: () => void;
 const markerRadius = 4;
 const markerWeight = 2;
 const selectedMarkerRadius = 8;
@@ -44,8 +55,8 @@ const selectedMarkerColor = "#ffff00";
 export const createMap = (
   element: HTMLElement,
   municipalities: Municipality[],
-  center: [number, number],
-  zoom: number
+  center?: [number, number],
+  zoom?: number
 ): (() => void) => {
   if (!element || map) {
     return emptyCallback;
@@ -54,7 +65,7 @@ export const createMap = (
 
   _municipalities = municipalities;
 
-  map = prepareMap(element, center, zoom);
+  map = prepareMap(element);
 
   const municipalityLayerGroups: AddressLayerGroup[] = [];
   const layerGroupsForControl: { [key: string]: SchoolLayerGroup } = {};
@@ -81,7 +92,39 @@ export const createMap = (
     municipalities;
   });
 
-  map.fitBounds(bounds);
+  map.on("popupopen", function (e: PopupEvent) {
+    const popup = e.popup;
+    if (isPopupWithMarker(popup)) {
+      lastListener = () => {
+        centerLeafletMapOnMarker(popup.marker);
+      };
+      const button =
+        // @ts-ignore not ideal but unfortunately not other way to get the button
+        e.popup._source._popup._contentNode.querySelector(".marker-button");
+      button.addEventListener("click", lastListener);
+    }
+  });
+
+  map.on("popupclose", function (e: PopupEvent) {
+    const popup = e.popup;
+    if (isPopupWithMarker(popup) && lastListener) {
+      const button =
+        // @ts-ignore
+        e.popup._source._popup._contentNode.querySelector(".marker-button");
+      button.removeEventListener("click", lastListener);
+    }
+  });
+
+  if (center) {
+    console.log("!!!setting center", center, zoom);
+    map.setView(center, zoom);
+  } else {
+    console.log("!!!fitting bounds", bounds, zoom);
+    map.fitBounds(bounds);
+    if (zoom) {
+      map.setZoom(zoom);
+    }
+  }
 
   if (municipalities.length > 1) {
     L.control.layers(undefined, layerGroupsForControl).addTo(map);
@@ -98,11 +141,7 @@ export const createMap = (
   };
 };
 
-const prepareMap = (
-  element: HTMLElement,
-  center: [number, number],
-  zoom: number
-): LeafletMap => {
+const prepareMap = (element: HTMLElement): LeafletMap => {
   const map = L.map(element, {
     renderer: L.canvas({ padding: 0.5 }),
   });
@@ -111,7 +150,6 @@ const prepareMap = (
       'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
   }).addTo(map);
 
-  map.setView(center, zoom);
   return map;
 };
 
@@ -141,6 +179,7 @@ const createSchoolMarkers = (
     if (!point.lat || !point.lng) {
       return;
     }
+
     const marker: CircleMarkerWithSchool = L.circle([point.lat, point.lng], {
       radius: markerRadius,
       weight: markerWeight,
@@ -148,7 +187,18 @@ const createSchoolMarkers = (
       fillColor: color,
       fillOpacity: 1,
       color,
-    }).bindPopup(point.address);
+    });
+    const popup: PopupWithMarker = Object.assign(
+      L.popup().setContent(`
+      <div>
+        ${point.address}
+        <div class="text-center mt-2"><button class="btn btn-success btn-sm marker-button">
+          Zobrazit spádovou školu    
+        </button></div>
+      </div>`),
+      { marker: marker }
+    );
+    marker.bindPopup(popup);
     marker.school = schoolMarker;
     // marker.on("click", (e) => {
     //   centerLeafletMapOnMarker(marker);
