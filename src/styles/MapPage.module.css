@@ -1,0 +1,105 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+}
+
+.suggest {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  margin: 10px;
+  z-index: 999;
+  width: 50%;
+  max-width: 400px;
+}
+
+.suggest input {
+  height: 48px;
+  border: 2px solid rgba(0,0,0,0.3);
+}
+
+.alert {
+  position: fixed;
+  top: 10px;
+  transition: opacity 0.5s;
+  display: none;
+  opacity: 0;
+  z-index: 5000;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.about {
+  position: absolute;
+  top: 0;
+  right: 60px;
+  margin: 10px;
+  z-index: 999;
+  text-align: right;
+}
+
+.about .tag {
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid rgba(0,0,0,0.4);
+  display: inline-block;
+}
+
+.about ul.collapsed {
+  list-style: none;
+  background-color: white;
+  max-width: 300px;
+  margin-top: 5px;
+  padding: 20px;
+  border-radius: 5px;
+  border: 2px solid rgba(0,0,0,0.4);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.about ul.collapsed li {
+  margin-bottom: 1rem;
+}
+
+.about ul.collapsed li:last-child {
+  margin-bottom: 0;
+}
+
+.about:hover .collapsed {
+  display: block;
+  opacity: 1;
+}
+
+
+/* Tablet and Smaller Desktop */
+@media (min-width: 701px) and (max-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(2, 50%);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .vercelLogo {
+    filter: invert(1);
+  }
+
+  .logo,
+  .thirteen img {
+    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
