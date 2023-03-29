@@ -200,9 +200,6 @@ const createSchoolMarkers = (
     );
     marker.bindPopup(popup);
     marker.school = schoolMarker;
-    // marker.on("click", (e) => {
-    //   centerLeafletMapOnMarker(marker);
-    // });
     addressLayerGroup.addLayer(marker);
     bounds.extend(marker.getLatLng());
     markers[point.address] = marker;
