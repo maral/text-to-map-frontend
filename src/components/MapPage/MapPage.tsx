@@ -68,8 +68,13 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
 
         {showMenu && (
           <div className={styles.about}>
-            <div className={styles.tag}>o projektu</div>
+            <div className={styles.tag}>menu</div>
             <ul className={styles.collapsed}>
+              <li>
+                Již brzy bude možnost umístit mapu spádové oblasti vaší školy či
+                MČ přímo na Vaše webové stránky (očekávané datum spuštění:
+                3.&nbsp;dubna 2023)
+              </li>
               <AboutLink url="https://github.com/maral/text-to-map-frontend">
                 Github
               </AboutLink>
@@ -86,11 +91,13 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
                 Napište mi
               </AboutLink>
               <li>
-                <KofiButton
-                  kofiID="E1E5JOMLT"
-                  color="#29abe0"
-                  title="Buy me a coffee"
-                ></KofiButton>
+                <em>
+                  Projekt je financován{" "}
+                  <a href="https://www.praha.eu/jnp/" target="_blank">
+                    Magistrátem hl. m. Prahy
+                  </a>{" "}
+                  do 31. 3. 2024.
+                </em>
               </li>
             </ul>
           </div>
