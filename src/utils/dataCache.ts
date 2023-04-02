@@ -10,7 +10,7 @@ export const getAllData = (): Municipality[] => {
     return allData;
   }
 
-  const filePath = path.join(process.cwd(), "data/praha.json");
+  const filePath = path.join(process.cwd(), "public/praha.json");
   const fileContents = fs.readFileSync(filePath, "utf8");
   allData = JSON.parse(fileContents);
   if (!allData) {
