@@ -10,6 +10,8 @@ import SuggestInput from "./SuggestInput";
 import Alert from "./Alert";
 import useQueryParams from "@/hooks/useQueryParams";
 import { PageType } from "@/types/page";
+import Link from "next/link";
+import Menu from "./Menu";
 
 export interface MapPageProps {
   municipalities: Municipality[];
@@ -17,7 +19,7 @@ export interface MapPageProps {
 }
 
 export default function MapPage({ municipalities, pageType }: MapPageProps) {
-  const { showSearch, showMenu } = useQueryParams(pageType);
+  const { showSearch, showMenu, showControls } = useQueryParams(pageType);
 
   const [alertMessage, setAlertMessage] = React.useState("");
   const [alertVisible, setAlertVisible] = React.useState(false);
@@ -31,10 +33,6 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    console.log("useEffect inputRef", inputRef);
-  }, [inputRef]);
 
   const Map = React.useMemo(
     () =>
@@ -55,7 +53,11 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
       </Head>
       <main>
         {showSearch && (
-          <div className={styles.suggest}>
+          <div
+            className={`${styles.suggest} ${
+              showControls ? styles.moveRight : ""
+            }`}
+          >
             <SuggestInput ref={inputRef} />
           </div>
         )}
@@ -67,40 +69,7 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
         />
 
         {showMenu && (
-          <div className={styles.about}>
-            <div className={styles.tag}>menu</div>
-            <ul className={styles.collapsed}>
-              <li>
-                Již brzy bude možnost umístit mapu spádové oblasti vaší školy či
-                MČ přímo na Vaše webové stránky (očekávané datum spuštění:
-                3.&nbsp;dubna 2023)
-              </li>
-              <AboutLink url="https://github.com/maral/text-to-map-frontend">
-                Github
-              </AboutLink>
-              <AboutLink url="https://twitter.com/LisyMarek/status/1637777860181016581">
-                Vlákno o projektu
-              </AboutLink>
-              <AboutLink url="praha.json">
-                JSON s adresními místy ke stažení
-              </AboutLink>
-              <AboutLink
-                url="mailto:marek.lisy.hk@gmai.com"
-                prependText="Chcete mapu spádových oblastí i pro vaše město?"
-              >
-                Napište mi
-              </AboutLink>
-              <li>
-                <em>
-                  Projekt je financován{" "}
-                  <a href="https://www.praha.eu/jnp/" target="_blank">
-                    Magistrátem hl. m. Prahy
-                  </a>{" "}
-                  do 31. 3. 2024.
-                </em>
-              </li>
-            </ul>
-          </div>
+          <Menu moveLeft={municipalities.length > 1 && showControls} />
         )}
 
         <Alert message={alertMessage} visible={alertVisible} />

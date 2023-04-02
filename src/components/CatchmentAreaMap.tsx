@@ -15,14 +15,20 @@ interface CatchmentAreaMapProps {
 const CatchmentAreaMap = memo(
   ({ municipalities, suggestInput, onError }: CatchmentAreaMapProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
-    const { center, zoom, isReady } = useQueryParams();
+    const { center, zoom, isReady, showControls, color } = useQueryParams();
 
     useEffect(() => {
-      console.log("useEffect createMap");
       if (mapRef.current && isReady) {
-        createMap(mapRef.current, municipalities, center, zoom);
+        createMap(
+          mapRef.current,
+          municipalities,
+          center,
+          zoom,
+          showControls,
+          color
+        );
       }
-    }, [municipalities, center, zoom, isReady]);
+    }, [municipalities, center, zoom, showControls, color, isReady]);
 
     return (
       <>

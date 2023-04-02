@@ -1,62 +1,6 @@
-import { PageType } from "@/types/page";
+import { PageType, EmbedQueryParams } from "@/types/page";
+import { getDefaultParams } from "@/utils/defaultParams";
 import { useRouter } from "next/router";
-
-interface SanitizedQueryParams {
-  color?: string;
-  zoom?: number;
-  center?: [number, number];
-  showSearch: boolean;
-  showControls: boolean;
-  showMenu: boolean;
-  mode: "points" | "polygons";
-  isEmbed: boolean;
-  isReady: boolean;
-}
-
-const DEFAULT_QUERY_PARAMS: Map<PageType, SanitizedQueryParams> = new Map([
-  [
-    PageType.All,
-    {
-      color: undefined,
-      zoom: undefined,
-      center: undefined,
-      showSearch: true,
-      showControls: true,
-      showMenu: true,
-      mode: "points",
-      isEmbed: true,
-      isReady: false,
-    },
-  ],
-  [
-    PageType.Municipality,
-    {
-      color: undefined,
-      zoom: undefined,
-      center: undefined,
-      showSearch: true,
-      showControls: true,
-      showMenu: false,
-      mode: "points",
-      isEmbed: true,
-      isReady: false,
-    },
-  ],
-  [
-    PageType.School,
-    {
-      color: undefined,
-      zoom: undefined,
-      center: undefined,
-      showSearch: false,
-      showControls: true,
-      showMenu: false,
-      mode: "points",
-      isEmbed: true,
-      isReady: false,
-    },
-  ],
-]);
 
 const sanitizeColor = (value?: string): string | undefined => {
   if (value && CSS.supports("color", value)) {
@@ -75,7 +19,10 @@ const sanitizeZoom = (value?: string): number | undefined => {
   return undefined;
 };
 
-const sanitizeBool = (value?: string | boolean): boolean | undefined => {
+const sanitizeBool = (
+  value?: string | boolean,
+  defaultValue?: boolean
+): boolean => {
   if (typeof value === "boolean") {
     return value;
   } else if (typeof value === "string") {
@@ -84,12 +31,11 @@ const sanitizeBool = (value?: string | boolean): boolean | undefined => {
     } else if (value === "1" || value === "true") {
       return true;
     }
-    return undefined;
   }
-};
-
-const sanitizeBoolRequired = (value?: string | boolean): boolean => {
-  return sanitizeBool(value) || false;
+  if (typeof defaultValue === "boolean") {
+    return defaultValue;
+  }
+  return false;
 };
 
 const sanitizeFloat = (value?: string): number | undefined => {
@@ -102,20 +48,27 @@ const sanitizeFloat = (value?: string): number | undefined => {
   return undefined;
 };
 
-const useQueryParams = (
-  type: PageType = PageType.All
-): SanitizedQueryParams => {
+const useQueryParams = (type: PageType = PageType.All): EmbedQueryParams => {
   const router = useRouter();
 
-  const defaults = DEFAULT_QUERY_PARAMS.get(type);
+  const defaults = getDefaultParams(type);
   if (!defaults) {
     throw new Error("Invalid page type");
   }
 
   const color = sanitizeColor(router.query.color?.toString() || defaults.color);
   const zoom = sanitizeZoom(router.query.zoom?.toString() || defaults.color);
-  const showSearch = sanitizeBoolRequired(
-    router.query.search?.toString() || defaults.showSearch
+  const showSearch = sanitizeBool(
+    router.query.search?.toString(),
+    defaults.showSearch
+  );
+  const showControls = sanitizeBool(
+    router.query.controls?.toString(),
+    defaults.showControls
+  );
+  const showMenu = sanitizeBool(
+    router.query.menu?.toString(),
+    defaults.showMenu
   );
   const lat = sanitizeFloat(router.query.lat?.toString());
   const lon = sanitizeFloat(router.query.lon?.toString());
@@ -128,6 +81,8 @@ const useQueryParams = (
     zoom,
     center,
     showSearch,
+    showControls,
+    showMenu,
     isReady: router.isReady,
   };
 };

@@ -23,7 +23,6 @@ interface MunicipalityPageProps {
 export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
   context
 ) => {
-  console.log("[municipality]");
   if (!context.params) {
     return {
       notFound: true,
@@ -31,10 +30,7 @@ export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
   }
 
   const municipalityId = context.params.municipality as string;
-  const color = context.params.color as string;
   const municipality = loadMunicipalityData(municipalityId);
-
-  console.log("color", color);
 
   if (!municipality) {
     return {
@@ -52,8 +48,8 @@ export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
 export const getStaticPaths: GetStaticPaths = async () => {
   const municipalites = getMunicipalitySlugsList();
 
-  const paths = municipalites.map((municipality: string) => ({
-    params: { municipality },
+  const paths = municipalites.map(({ slug }) => ({
+    params: { municipality: slug },
   }));
 
   return { paths, fallback: false };

@@ -1,10 +1,10 @@
 export interface AboutLinksProps {
-  url: string;
+  href: string;
   prependText?: string;
 }
 
 export default function AboutLink({
-  url,
+  href,
   prependText,
   children,
 }: React.PropsWithChildren<AboutLinksProps>) {
@@ -15,7 +15,7 @@ export default function AboutLink({
           <span>{prependText}</span>{" "}
         </>
       )}
-      <a href={url} target="_blank">
+      <a href={href} target="_blank">
         {children}
       </a>
     </li>

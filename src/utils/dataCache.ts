@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import slug from "slug";
-import { Municipality, School } from "../types/data";
+import { Municipality, SchoolSlugs } from "@/types/data";
 
 let allData: Municipality[];
 
@@ -20,11 +20,17 @@ export const getAllData = (): Municipality[] => {
   return allData;
 };
 
-export const getMunicipalitySlugsList = (): string[] => {
+export const getMunicipalitySlugsList = (): {
+  name: string;
+  slug: string;
+}[] => {
   const allData = getAllData();
 
   return allData
-    ? allData.map((municipality) => slug(municipality.municipalityName))
+    ? allData.map((municipality) => ({
+        name: municipality.municipalityName,
+        slug: slug(municipality.municipalityName),
+      }))
     : [];
 };
 
@@ -45,6 +51,20 @@ export const getSchoolSlugsList = (): string[] => {
     ? allData.flatMap((municipality) =>
         municipality.schools.map((school) => slug(school.name))
       )
+    : [];
+};
+
+export const getSchoolSlugsMap = (): SchoolSlugs => {
+  const allData = getAllData();
+
+  return allData
+    ? allData.map((municipality) => ({
+        municipalityName: municipality.municipalityName,
+        schools: municipality.schools.map((school) => ({
+          name: school.name,
+          slug: slug(school.name),
+        })),
+      }))
     : [];
 };
 

@@ -10,12 +10,17 @@
 .suggest {
   position: absolute;
   top: 0;
-  left: 60px;
+  left: 0px;
   margin: 10px;
   z-index: 999;
   width: 50%;
   max-width: 400px;
 }
+
+.moveRight {
+  left: 60px;
+}
+
 
 .suggest input {
   height: 48px;
@@ -36,10 +41,14 @@
 .about {
   position: absolute;
   top: 0;
-  right: 60px;
+  right: 0px;
   margin: 10px;
   z-index: 999;
   text-align: right;
+}
+
+.moveLeft {
+  right: 60px;
 }
 
 .about .tag {

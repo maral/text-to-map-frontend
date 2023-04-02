@@ -18,7 +18,6 @@ interface SchoolPageProps {
 export const getStaticProps: GetStaticProps<SchoolPageProps> = async (
   context
 ) => {
-  console.log("[municipality]");
   if (!context.params) {
     return {
       notFound: true,

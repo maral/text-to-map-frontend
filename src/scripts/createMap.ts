@@ -56,16 +56,17 @@ export const createMap = (
   element: HTMLElement,
   municipalities: Municipality[],
   center?: [number, number],
-  zoom?: number
+  zoom?: number,
+  showControls: boolean = true,
+  color?: string
 ): (() => void) => {
   if (!element || map) {
     return emptyCallback;
   }
-  console.log("createMap");
 
   _municipalities = municipalities;
 
-  map = prepareMap(element);
+  map = prepareMap(element, showControls);
 
   const municipalityLayerGroups: AddressLayerGroup[] = [];
   const layerGroupsForControl: { [key: string]: SchoolLayerGroup } = {};
@@ -81,7 +82,7 @@ export const createMap = (
     municipality.schools.forEach((school) => {
       createSchoolMarkers(
         school,
-        `#${colors[colorIndex % colors.length]}`,
+        color ? color : `#${colors[colorIndex % colors.length]}`,
         schoolsLayerGroup,
         layerGroup,
         markers,
@@ -116,17 +117,15 @@ export const createMap = (
   });
 
   if (center) {
-    console.log("!!!setting center", center, zoom);
-    map.setView(center, zoom);
+    map.setView(center, zoom ?? 15);
   } else {
-    console.log("!!!fitting bounds", bounds, zoom);
     map.fitBounds(bounds);
     if (zoom) {
       map.setZoom(zoom);
     }
   }
 
-  if (municipalities.length > 1) {
+  if (municipalities.length > 1 && showControls) {
     L.control.layers(undefined, layerGroupsForControl).addTo(map);
   } else if (municipalities.length === 1) {
     map.addLayer(municipalityLayerGroups[0]);
@@ -136,18 +135,21 @@ export const createMap = (
   map.on("zoomend", zoomEndHandler);
   zoomEndHandler();
   return () => {
-    console.log("removing map");
     map.remove();
   };
 };
 
-const prepareMap = (element: HTMLElement): LeafletMap => {
+const prepareMap = (
+  element: HTMLElement,
+  showControls: boolean
+): LeafletMap => {
   const map = L.map(element, {
     renderer: L.canvas({ padding: 0.5 }),
+    zoomControl: showControls,
   });
   L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
     attribution:
-      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
   }).addTo(map);
 
   return map;

@@ -30,3 +30,17 @@ export interface Municipality {
 }
 
 export type Data = Municipality[] | null;
+
+export interface SlugWithName {
+  name: string;
+  slug: string;
+}
+
+export interface SchoolSlugsMunicipality {
+  municipalityName: string;
+  schools: SlugWithName[];
+}
+
+export type SchoolSlugs = SchoolSlugsMunicipality[];
+
+export type MunicipalitySlugs = SlugWithName[];
