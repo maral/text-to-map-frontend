@@ -1,16 +1,13 @@
 import Head from "next/head";
 import dynamic from "next/dynamic";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styles from "@/styles/MapPage.module.css";
-import KofiButton from "kofi-button";
 import { Municipality } from "@/types/data";
 import Loading from "@/components/Loading";
-import AboutLink from "./AboutLink";
 import SuggestInput from "./SuggestInput";
 import Alert from "./Alert";
 import useQueryParams from "@/hooks/useQueryParams";
 import { PageType } from "@/types/page";
-import Link from "next/link";
 import Menu from "./Menu";
 
 export interface MapPageProps {
