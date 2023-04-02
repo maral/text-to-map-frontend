@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 const sanitizeColor = (value?: string): string | undefined => {
   if (value && CSS.supports("color", value)) {
     return value;
+  } else if (value && CSS.supports("color", `#${value}`)) {
+    return `#${value}`;
   }
   return undefined;
 };
