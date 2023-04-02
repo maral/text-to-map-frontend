@@ -12,19 +12,11 @@ export default function EmbedPage({
   schoolSlugs,
   municipalitySlugs,
 }: MunicipalityPageProps) {
-  if (schoolSlugs.length === 0 || municipalitySlugs.length === 0) {
-    return (
-      <div className="alert alert-warning">
-        Error: nepodařilo se načíst školy nebo obce/městské části.
-      </div>
-    );
-  }
-
   const defaults = getDefaultParams(PageType.School);
 
   const [pageType, setPageType] = useState(PageType.School);
-  const [school, setSchool] = useState(schoolSlugs[0].schools[0].slug);
-  const [municipality, setMunicipality] = useState(municipalitySlugs[0].slug);
+  const [school, setSchool] = useState(schoolSlugs[0]?.schools[0]?.slug);
+  const [municipality, setMunicipality] = useState(municipalitySlugs[0]?.slug);
   const [showSearch, setShowSearch] = useState(defaults.showSearch);
   const [showControls, setShowControls] = useState(defaults.showControls);
   const [showMenu, setShowMenu] = useState(defaults.showMenu);
@@ -345,8 +337,8 @@ const EmbedCode = ({ url }: { url: string }) => {
       </div>
       <div className="card-body">
         <pre className="mb-0 text-wrap">
-          &lt;iframe src="{url}" width="100%" height="600px"
-          frameborder="0"&gt;&lt;/iframe&gt;
+          &lt;iframe src=&quot;{url}&quot; width=&quot;100%&quot;
+          height=&quot;600px&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;
         </pre>
       </div>
     </div>
@@ -367,13 +359,7 @@ const createUrl = (
   fixedColor: boolean,
   color: string
 ): string => {
-  const baseUrl = useMemo(() => {
-    const origin = "http://localhost:3000"; //"https://www.spadovostpraha.cz";
-    // typeof window !== "undefined" && window.location.origin
-    //   ? window.location.origin
-    //   : "";
-    return origin;
-  }, []);
+  const baseUrl = "https://www.spadovostpraha.cz";
 
   const path =
     pageType === PageType.School ? `/s/${school}` : `/m/${municipality}`;
