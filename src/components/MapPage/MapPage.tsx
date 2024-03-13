@@ -13,9 +13,10 @@ import Menu from "./Menu";
 export interface MapPageProps {
   municipalities: Municipality[];
   pageType: PageType;
+  year?: number;
 }
 
-export default function MapPage({ municipalities, pageType }: MapPageProps) {
+export default function MapPage({ municipalities, pageType, year }: MapPageProps) {
   const { showSearch, showMenu, showControls } = useQueryParams(pageType);
 
   const [alertMessage, setAlertMessage] = React.useState("");
@@ -66,7 +67,7 @@ export default function MapPage({ municipalities, pageType }: MapPageProps) {
         />
 
         {showMenu && (
-          <Menu moveLeft={municipalities.length > 1 && showControls} />
+          <Menu moveLeft={municipalities.length > 1 && showControls} year={year} />
         )}
 
         <Alert message={alertMessage} visible={alertVisible} />

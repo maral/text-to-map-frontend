@@ -5,12 +5,12 @@ import { Municipality, SchoolSlugs } from "@/types/data";
 
 let allData: Municipality[];
 
-export const getAllData = (): Municipality[] => {
+export const getAllData = (year = 2024): Municipality[] => {
   if (allData) {
     return allData;
   }
 
-  const filePath = path.join(process.cwd(), "public/praha.json");
+  const filePath = path.join(process.cwd(), `public/praha${year}.json`);
   const fileContents = fs.readFileSync(filePath, "utf8");
   allData = JSON.parse(fileContents);
   if (!allData) {
