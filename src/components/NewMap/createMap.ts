@@ -67,14 +67,12 @@ export const createMap = (
 
   setupPopups(map);
 
-  map.setView(center ?? [50.08804, 14.42076], zoom ?? 15);
-
   if (center) {
     map.setView(center, zoom ?? 15);
   } else {
-    // map.on("load", function () {
-    //   map.fitBounds(schoolsLayerGroup.getBounds());
-    // });
+    map.fitBounds(
+      L.latLngBounds([49.943403, 14.259068], [50.171879, 14.690316])
+    );
     if (zoom) {
       map.setZoom(zoom);
     }
