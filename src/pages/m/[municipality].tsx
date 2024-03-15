@@ -1,4 +1,4 @@
-import MapPage from "@/components/MapPage/MapPage";
+import MapPage from "@/components/OldMap/MapPage";
 import {
   getMunicipalitySlugsList,
   loadMunicipalityData,

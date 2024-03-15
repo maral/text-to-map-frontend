@@ -2,6 +2,7 @@ export interface Address {
   address: string;
   lat: number;
   lng: number;
+  lineNumbers?: number[];
 }
 
 export interface Position {
@@ -20,6 +21,8 @@ export interface Position {
 
 export interface School {
   name: string;
+  izo: string;
+  isWholeMunicipality: boolean;
   addresses: Address[];
   position: Position;
 }
@@ -27,6 +30,8 @@ export interface School {
 export interface Municipality {
   municipalityName: string;
   schools: School[];
+  wholeMunicipalityPoints: Address[];
+  unmappedPoints: Address[];
 }
 
 export type Data = Municipality[] | null;
@@ -44,3 +49,66 @@ export interface SchoolSlugsMunicipality {
 export type SchoolSlugs = SchoolSlugsMunicipality[];
 
 export type MunicipalitySlugs = SlugWithName[];
+
+// new types
+
+import {
+  Circle,
+  LayerGroup,
+  Marker,
+  Popup,
+  GeoJSON,
+  FeatureGroup,
+} from "leaflet";
+
+export type SchoolMarker = Circle;
+
+export type MarkerWithSchools = (Marker | Circle) & {
+  schools?: Circle[];
+};
+
+export interface PopupWithMarker extends Popup {
+  marker: MarkerWithSchools;
+}
+
+export const isPopupWithMarker = (popup: Popup): popup is PopupWithMarker => {
+  return popup.hasOwnProperty("marker");
+};
+
+export type SchoolMarkerMap = Record<string, SchoolMarker>;
+export type AddressMarkerMap = Record<string, MarkerWithSchools[]>;
+export type AddressLayerGroup = LayerGroup<MarkerWithSchools> & { name?: string };
+export type AddressesLayerGroup = LayerGroup & {
+  cityCode?: string;
+  type?: string;
+};
+export type SchoolLayerGroup = FeatureGroup<MarkerWithSchools | Circle> & {
+  cityCode?: string;
+  type?: string;
+};
+
+export interface CityOnMap {
+  code: number;
+  name: string;
+  isPublished: boolean;
+  lat: number;
+  lng: number;
+}
+
+export type DataForMap = {
+  municipalities: Municipality[];
+  polygons: any; //FeatureCollection[];
+};
+
+export type DataForMapByCityCodes = Record<number, DataForMap>;
+
+export type LoadedCitiesData = Record<number, CityData>;
+
+export interface CityData {
+  city: CityOnMap;
+  data: DataForMap;
+  addressesLayerGroup: AddressLayerGroup;
+  schoolsLayerGroup: SchoolLayerGroup;
+  polygonLayer: GeoJSON;
+  addressMarkers: AddressMarkerMap;
+}

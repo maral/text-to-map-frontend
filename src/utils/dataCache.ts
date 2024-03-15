@@ -79,10 +79,14 @@ export const loadSchoolData = (
     );
     if (school) {
       return {
-        municipalityName: municipality.municipalityName,
+        ...municipality,
         schools: [school],
       };
     }
   }
   return undefined;
+};
+
+export const getOrdinanceText = (): string => {
+  return fs.readFileSync("public/vyhlaska_praha.txt", "utf8");
 };

@@ -1,4 +1,4 @@
-import MapPage from "@/components/MapPage/MapPage";
+import MapPage from "@/components/OldMap/MapPage";
 import { getSchoolSlugsList, loadSchoolData } from "@/utils/dataCache";
 import { GetStaticProps, GetStaticPaths } from "next";
 import { Municipality } from "@/types/data";
