@@ -3620,7 +3620,7 @@ Lihovarská
 Lisabonská
 Lísková
 Malá Skloněná
-Malettova
+Malletova
 Mandloňová
 Matějkova
 Mezilehlá
@@ -4420,18 +4420,18 @@ Květnového vítězství – lichá č. 31 - 41, 53 a výše, sudá č. 18 a v�
 Machkova
 Markušova
 Matúškova
-Mirošovská – č. p. 31, 32, 36, 41, 42, 49, 60, 61, 119, 124, 128, 220 
+Mirošovská – lichá č. 13 a výše, sudá č. 8 a výše
 Mírového hnutí – č. 20 a výše
 Michnova
-Nad úpadem do č. p. 428
-Pacajevova – č. p. 46, 47, 59, 66, 82, 83, 91, 93, 95, 97, 98, 111, 112, 118, 122, 145, 934
+Nad úpadem - sudá č. do 80, lichá č. do 61
+Pacajevova – lichá č. 13 a výše, sudá č. 16 a výše
 Prašná
 Podjavorinské – sudá č. 10 a výše
 Schulhoffova
 Starobylá – č. p. 497, 498, 1006 – 1012
 U Přehrady
 U rybářství
-V Hájích č. p. 85 – 293, 322 – 345, 380 - 390
+V Hájích - lichá č., sudá č. do 22
 V průčelí č. p. 1648 – 1651
 Ženíškova
 
@@ -4497,7 +4497,7 @@ Mirošovská – lichá č. 1 - 9, sudá č. 2 - 6a
 Mendelova
 Nad úpadem – sudá č. 84 a výše, lichá č. 63 a výše
 Nešporova
-Pacajevova – lichá č. 1 - 5, sudá č. 2 - 10
+Pacajevova – lichá č. 1 - 7, sudá č. 2 - 10
 Plickova
 Stachova
 Starobylá – č. p. 3 – 6, 45, 222, 236, 242, 245, 246, 910, 999
@@ -4505,7 +4505,7 @@ Staňkova
 Steinerova
 U modré školy
 U transformační stanice
-V Hájích – sudá č. 46 a výše
+V Hájích – sudá č. 28 a výše
 Výstavní
 Wagnerova
 Za rybářstvím
