@@ -42,7 +42,7 @@ export const createMap = (
     addressesLayerGroup,
     schoolsLayerGroup,
     unmappedLayerGroup,
-    polygonLayer,
+    polygonLayerGroup,
     municipalityLayerGroups,
     addressMarkers,
   } = createCityLayers({
@@ -56,7 +56,7 @@ export const createMap = (
   const layerGroupsForControl: Record<string, LayerGroup> = {};
 
   layerGroupsForControl["Školy"] = schoolsLayerGroup;
-  layerGroupsForControl["Oblasti"] = polygonLayer;
+  layerGroupsForControl["Oblasti"] = polygonLayerGroup;
   if (showDebugInfo) {
     layerGroupsForControl["Neurčené adresy"] = unmappedLayerGroup;
   }
@@ -86,13 +86,13 @@ export const createMap = (
   //   map.addLayer(layerGroup);
   // });
 
-  map.addLayer(polygonLayer);
+  map.addLayer(polygonLayerGroup);
   // map.addLayer(addressesLayerGroup);
   map.addLayer(unmappedLayerGroup);
   map.addLayer(schoolsLayerGroup);
 
-  polygonLayer.on("add", () => {
-    polygonLayer.bringToBack();
+  polygonLayerGroup.on("add", () => {
+    polygonLayerGroup.bringToBack();
   });
 
   addressesLayerGroup.on("add", () => {

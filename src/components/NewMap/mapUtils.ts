@@ -11,8 +11,13 @@ import {
   isPopupWithMarker,
 } from "@/types/data";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import { Feature, MultiPolygon, Polygon } from "@turf/helpers";
-import L, { Circle, Map, Polyline, PopupEvent } from "leaflet";
+import {
+  Feature,
+  FeatureCollection,
+  MultiPolygon,
+  Polygon,
+} from "@turf/helpers";
+import L, { Circle, FeatureGroup, Map, Polyline, PopupEvent } from "leaflet";
 import { createMarkers } from "./markers";
 
 export const colors = [
@@ -97,32 +102,38 @@ export const setupPopups = (map: Map): void => {
 
 const setUpSchoolMarkersEvents = (
   schoolMarkers: SchoolMarkerMap,
-  polygonLayer: L.GeoJSON
+  polygonLayers: L.GeoJSON[]
 ) => {
   Object.entries(schoolMarkers).forEach(([schoolIzo, marker]) => {
     marker.on("click", function (e) {
       // check polygonLayer is currently visible
-      if (!(polygonLayer as any)._map) {
+      if (!(polygonLayers[0] as any)._map) {
         return;
       }
       resetAllHighlights();
       schoolHighlighted = true;
-      lastPolygonLayer = polygonLayer;
-      // when we click on a school marker, we want to hide all other polygons
-      // leave only the one that is related to the school
-      polygonLayer.getLayers().forEach((_layer) => {
-        const layer = _layer as L.Polygon & {
-          feature: Feature<Polygon | MultiPolygon>;
-        };
-        if (layer.feature.properties?.schoolIzo !== schoolIzo) {
-          layer.setStyle({ fillOpacity: 0.1, opacity: 0.3, fillColor: "#888" });
-          layer.bringToBack();
-        } else {
-          const map = (polygonLayer as any)._map;
-          map.flyToBounds(layer.getBounds(), { duration: 0.7 });
-          layer.setStyle({ color: layer.options.fillColor }); // "#9b0505"
-        }
-      });
+      lastPolygonLayers = polygonLayers;
+      for (const polygonLayer of polygonLayers) {
+        // when we click on a school marker, we want to hide all other polygons
+        // leave only the one that is related to the school
+        polygonLayer.getLayers().forEach((_layer) => {
+          const layer = _layer as L.Polygon & {
+            feature: Feature<Polygon | MultiPolygon>;
+          };
+          if (layer.feature.properties?.schoolIzo !== schoolIzo) {
+            layer.setStyle({
+              fillOpacity: 0.1,
+              opacity: 0.3,
+              fillColor: "#888",
+            });
+            layer.bringToBack();
+          } else {
+            const map = (polygonLayer as any)._map;
+            map.flyToBounds(layer.getBounds(), { duration: 0.7 });
+            layer.setStyle({ color: layer.options.fillColor });
+          }
+        });
+      }
       selectSchool(marker);
     });
   });
@@ -130,7 +141,7 @@ const setUpSchoolMarkersEvents = (
 
 let polylines: Polyline[];
 let selectedSchools = new Set<Circle>();
-let lastPolygonLayer: L.GeoJSON | undefined;
+let lastPolygonLayers: L.GeoJSON[] | undefined;
 let schoolHighlighted = false;
 let addressHighlighted = false;
 let markerClone: Circle | undefined;
@@ -144,9 +155,9 @@ export const resetAllHighlights = (exceptPolygonHighlights = false) => {
   if (!isSomethingHighlighted() && exceptPolygonHighlights) {
     return;
   }
-  if (lastPolygonLayer) {
-    lastPolygonLayer.resetStyle();
-    lastPolygonLayer = undefined;
+  if (lastPolygonLayers) {
+    lastPolygonLayers.forEach((l) => l.resetStyle());
+    lastPolygonLayers = undefined;
   }
   if (markerClone) {
     markerClone.remove();
@@ -252,7 +263,7 @@ export const createCityLayers = ({
 }): {
   addressesLayerGroup: AddressLayerGroup;
   schoolsLayerGroup: SchoolLayerGroup;
-  polygonLayer: L.GeoJSON;
+  polygonLayerGroup: FeatureGroup;
   unmappedLayerGroup: AddressLayerGroup;
   municipalityLayerGroups: AddressLayerGroup[];
   addressMarkers: AddressMarkerMap;
@@ -264,6 +275,7 @@ export const createCityLayers = ({
   const municipalityLayerGroups: AddressLayerGroup[] = [];
   const schoolMarkers: SchoolMarkerMap = {};
   const addressMarkers: AddressMarkerMap = {};
+  const schoolColorIndicesMap: Record<string, number> = {};
 
   addressesLayerGroup.cityCode = cityCode;
   addressesLayerGroup.type = "addresses";
@@ -280,18 +292,30 @@ export const createCityLayers = ({
     unmappedLayerGroup,
     schoolMarkers,
     addressMarkers,
+    schoolColorIndicesMap,
     showDebugInfo,
     lines
   );
 
-  const polygonLayer = createPolygonLayer(data, schoolMarkers);
+  const allFeatures = Object.values(data.polygons).flatMap(
+    (polygon) => polygon.features
+  );
+  const monsterCollection: FeatureCollection = {
+    type: "FeatureCollection",
+    features: allFeatures,
+  };
+  const polygonLayers = [monsterCollection].map((polygon) =>
+    createPolygonLayer(polygon, schoolMarkers, schoolColorIndicesMap)
+  );
 
-  setUpSchoolMarkersEvents(schoolMarkers, polygonLayer);
+  setUpSchoolMarkersEvents(schoolMarkers, polygonLayers);
+
+  const polygonLayerGroup = L.featureGroup(polygonLayers);
 
   return {
     addressesLayerGroup,
     schoolsLayerGroup,
-    polygonLayer,
+    polygonLayerGroup,
     unmappedLayerGroup,
     municipalityLayerGroups,
     addressMarkers,
@@ -299,10 +323,11 @@ export const createCityLayers = ({
 };
 
 const createPolygonLayer = (
-  data: DataForMap,
-  schoolMarkers: SchoolMarkerMap
+  polygon: FeatureCollection,
+  schoolMarkers: SchoolMarkerMap,
+  schoolColorIndicesMap: Record<string, number>
 ) => {
-  const geoJsonLayer: L.GeoJSON = L.geoJSON(data.polygons, {
+  const geoJsonLayer: L.GeoJSON = L.geoJSON(polygon, {
     pane: "overlayPane",
     style: (feature) => {
       return feature
@@ -310,7 +335,10 @@ const createPolygonLayer = (
             fillColor:
               feature?.properties.colorIndex === -1
                 ? unmappedPolygonColor
-                : colors[feature.properties.colorIndex % colors.length],
+                : colors[
+                    schoolColorIndicesMap[feature.properties.schoolIzo] %
+                      colors.length
+                  ],
             color: "#777",
             weight: 2,
             fillOpacity: 0.4,

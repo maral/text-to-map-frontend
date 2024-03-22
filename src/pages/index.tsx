@@ -1,16 +1,16 @@
-import { Municipality } from "@/types/data";
+import { DataForMap, Municipality } from "@/types/data";
 import { PageType } from "@/types/page";
-import { getAllData, getOrdinanceText } from "@/utils/dataCache";
+import { getAllData, getOrdinanceText, getPolygons } from "@/utils/dataCache";
 import { GetStaticProps } from "next";
 import NewMapPage from "../components/NewMap/NewMapPage";
 
 export default function IndexPage({
-  municipalities,
+  data,
   ordinanceText,
 }: MunicipalityPageProps) {
   return (
     <NewMapPage
-      municipalities={municipalities}
+      data={data}
       showDebugInfo={false}
       pageType={PageType.All}
       ordinanceText={ordinanceText}
@@ -19,7 +19,7 @@ export default function IndexPage({
 }
 
 interface MunicipalityPageProps {
-  municipalities: Municipality[];
+  data: DataForMap;
   ordinanceText: string;
 }
 
@@ -27,11 +27,12 @@ export const getStaticProps: GetStaticProps<
   MunicipalityPageProps
 > = async () => {
   const municipalities: Municipality[] = getAllData();
+  const polygons = getPolygons();
   const ordinanceText = getOrdinanceText();
 
   return {
     props: {
-      municipalities,
+      data: { municipalities, polygons },
       ordinanceText,
     },
   };

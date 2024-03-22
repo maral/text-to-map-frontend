@@ -2,7 +2,7 @@ import Head from "next/head";
 import dynamic from "next/dynamic";
 import React, { useRef } from "react";
 import styles from "@/styles/MapPage.module.css";
-import { Municipality } from "@/types/data";
+import { DataForMap, Municipality } from "@/types/data";
 import Loading from "@/components/Loading";
 import SuggestInput from "../MapPage/SuggestInput";
 import Alert from "../MapPage/Alert";
@@ -11,7 +11,7 @@ import { PageType } from "@/types/page";
 import Menu from "../MapPage/Menu";
 
 export interface MapPageProps {
-  municipalities: Municipality[];
+  data: DataForMap;
   pageType: PageType;
   ordinanceText: string;
   showDebugInfo: boolean;
@@ -19,7 +19,7 @@ export interface MapPageProps {
 }
 
 export default function NewMapPage({
-  municipalities,
+  data,
   pageType,
   ordinanceText,
   showDebugInfo,
@@ -69,7 +69,7 @@ export default function NewMapPage({
         )}
 
         <Map
-          data={{ municipalities, polygons: [] }}
+          data={data}
           text={ordinanceText}
           showDebugInfo={showDebugInfo}
           suggestInput={inputRef}
@@ -78,7 +78,7 @@ export default function NewMapPage({
 
         {showMenu && (
           <Menu
-            moveLeft={municipalities.length > 1 && showControls}
+            moveLeft={data.municipalities.length > 1 && showControls}
             year={year}
           />
         )}

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import slug from "slug";
-import { Municipality, SchoolSlugs } from "@/types/data";
+import { Municipality, PolygonMap, SchoolSlugs } from "@/types/data";
 
 let allData: Municipality[];
 
@@ -18,6 +18,15 @@ export const getAllData = (year = 2024): Municipality[] => {
   }
 
   return allData;
+};
+
+export const getPolygons = (year = 2024): PolygonMap => {
+  const filePath = path.join(
+    process.cwd(),
+    `public/praha-polygons${year}.json`
+  );
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  return JSON.parse(fileContents);
 };
 
 export const getMunicipalitySlugsList = (): {

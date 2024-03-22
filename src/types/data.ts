@@ -50,6 +50,7 @@ export type SchoolSlugs = SchoolSlugsMunicipality[];
 
 export type MunicipalitySlugs = SlugWithName[];
 
+import { FeatureCollection } from "@turf/helpers";
 // new types
 
 import {
@@ -77,7 +78,9 @@ export const isPopupWithMarker = (popup: Popup): popup is PopupWithMarker => {
 
 export type SchoolMarkerMap = Record<string, SchoolMarker>;
 export type AddressMarkerMap = Record<string, MarkerWithSchools[]>;
-export type AddressLayerGroup = LayerGroup<MarkerWithSchools> & { name?: string };
+export type AddressLayerGroup = LayerGroup<MarkerWithSchools> & {
+  name?: string;
+};
 export type AddressesLayerGroup = LayerGroup & {
   cityCode?: string;
   type?: string;
@@ -95,9 +98,11 @@ export interface CityOnMap {
   lng: number;
 }
 
+export type PolygonMap = Record<number, FeatureCollection>;
+
 export type DataForMap = {
   municipalities: Municipality[];
-  polygons: any; //FeatureCollection[];
+  polygons: PolygonMap;
 };
 
 export type DataForMapByCityCodes = Record<number, DataForMap>;
