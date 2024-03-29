@@ -1,18 +1,18 @@
-import MapPage from "@/components/OldMap/MapPage";
-import { getSchoolSlugsList, loadSchoolData } from "@/utils/dataCache";
-import { GetStaticProps, GetStaticPaths } from "next";
-import { Municipality } from "@/types/data";
+import NewMapPage from "@/components/NewMap/NewMapPage";
+import { DataForMap } from "@/types/data";
 import { PageType } from "@/types/page";
+import { getSchoolData, getSchoolSlugsList } from "@/utils/dataCache";
+import { GetStaticPaths, GetStaticProps } from "next";
 
-const SchoolPage = ({ municipalities }: SchoolPageProps) => {
-  return <MapPage municipalities={municipalities} pageType={PageType.School} />;
+const SchoolPage = ({ data }: SchoolPageProps) => {
+  return <NewMapPage data={data} pageType={PageType.School} />;
 };
 SchoolPage.displayName = "SchoolPage";
 
 export default SchoolPage;
 
 interface SchoolPageProps {
-  municipalities: Municipality[];
+  data: DataForMap;
 }
 
 export const getStaticProps: GetStaticProps<SchoolPageProps> = async (
@@ -24,24 +24,22 @@ export const getStaticProps: GetStaticProps<SchoolPageProps> = async (
     };
   }
 
-  const schoolSlug = context.params.school as string;
-  const municipality = loadSchoolData(schoolSlug);
-
-  if (!municipality) {
+  try {
+    const schoolSlug = context.params.school as string;
+    return {
+      props: {
+        data: getSchoolData(schoolSlug),
+      },
+    };
+  } catch (e) {
     return {
       notFound: true,
     };
   }
-
-  return {
-    props: {
-      municipalities: [municipality],
-    },
-  };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const schools = getSchoolSlugsList();
+  const schools = getSchoolSlugsList(2024);
 
   const paths = schools.map((school: string) => ({
     params: { school },

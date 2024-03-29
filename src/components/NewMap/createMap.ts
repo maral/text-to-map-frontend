@@ -15,15 +15,18 @@ let _municipalities: Municipality[];
 export const createMap = (
   element: HTMLElement,
   data: DataForMap,
-  text: string,
   showDebugInfo: boolean,
+  text?: string,
   center?: [number, number],
   zoom?: number,
+  color?: string,
   showControls: boolean = true
 ): (() => void) => {
   if (!element || map || mapInitialized) {
     return () => null;
   }
+
+  console.log(data);
 
   map = prepareMap(element, showControls);
   mapInitialized = true;
@@ -48,7 +51,8 @@ export const createMap = (
   } = createCityLayers({
     data,
     showDebugInfo,
-    lines: text.split("\n"),
+    color,
+    lines: showDebugInfo && text ? text.split("\n") : [],
   });
 
   markers = addressMarkers;
@@ -70,25 +74,22 @@ export const createMap = (
   if (center) {
     map.setView(center, zoom ?? 15);
   } else {
-    map.fitBounds(
-      L.latLngBounds([49.943403, 14.259068], [50.171879, 14.690316])
-    );
+    map.fitBounds(polygonLayerGroup.getBounds());
     if (zoom) {
       map.setZoom(zoom);
     }
   }
 
-  if (Object.keys(layerGroupsForControl).length > 1 && showControls) {
+  if (data.municipalities.length > 1 && showControls) {
     L.control.layers(undefined, layerGroupsForControl).addTo(map);
   }
 
-  // Object.values(layerGroupsForControl).forEach((layerGroup) => {
-  //   map.addLayer(layerGroup);
-  // });
-
   map.addLayer(polygonLayerGroup);
-  // map.addLayer(addressesLayerGroup);
   map.addLayer(unmappedLayerGroup);
+  if (data.municipalities.length === 1) {
+    map.addLayer(municipalityLayerGroups[0]);
+  }
+
   map.addLayer(schoolsLayerGroup);
 
   polygonLayerGroup.on("add", () => {

@@ -253,11 +253,13 @@ export const loadMunicipalitiesByCityCodes = async (
 export const createCityLayers = ({
   data,
   cityCode,
+  color,
   lines,
   showDebugInfo = false,
 }: {
   data: DataForMap;
   lines?: string[];
+  color?: string;
   showDebugInfo?: boolean;
   cityCode?: string;
 }): {
@@ -294,6 +296,7 @@ export const createCityLayers = ({
     addressMarkers,
     schoolColorIndicesMap,
     showDebugInfo,
+    color,
     lines
   );
 
@@ -305,7 +308,7 @@ export const createCityLayers = ({
     features: allFeatures,
   };
   const polygonLayers = [monsterCollection].map((polygon) =>
-    createPolygonLayer(polygon, schoolMarkers, schoolColorIndicesMap)
+    createPolygonLayer(polygon, schoolMarkers, schoolColorIndicesMap, color)
   );
 
   setUpSchoolMarkersEvents(schoolMarkers, polygonLayers);
@@ -325,7 +328,8 @@ export const createCityLayers = ({
 const createPolygonLayer = (
   polygon: FeatureCollection,
   schoolMarkers: SchoolMarkerMap,
-  schoolColorIndicesMap: Record<string, number>
+  schoolColorIndicesMap: Record<string, number>,
+  color?: string
 ) => {
   const geoJsonLayer: L.GeoJSON = L.geoJSON(polygon, {
     pane: "overlayPane",
@@ -333,12 +337,13 @@ const createPolygonLayer = (
       return feature
         ? {
             fillColor:
-              feature?.properties.colorIndex === -1
+              color ??
+              (feature?.properties.colorIndex === -1
                 ? unmappedPolygonColor
                 : colors[
                     schoolColorIndicesMap[feature.properties.schoolIzo] %
                       colors.length
-                  ],
+                  ]),
             color: "#777",
             weight: 2,
             fillOpacity: 0.4,

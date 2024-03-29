@@ -8,8 +8,8 @@ import useQueryParams from "@/hooks/useQueryParams";
 
 interface InnerMapProps {
   data: DataForMap;
-  text: string;
   showDebugInfo: boolean;
+  text?: string;
   suggestInput?: RefObject<HTMLInputElement>;
   onError?: (message: string) => void;
 }
@@ -29,10 +29,11 @@ const InnerMap = ({
       createMap(
         mapRef.current,
         data,
-        text,
         showDebugInfo,
+        text,
         center,
         zoom,
+        color,
         showControls
       );
     }

@@ -371,7 +371,8 @@ const createUrl = (
   fixedColor: boolean,
   color: string
 ): string => {
-  const baseUrl = "https://www.spadovostpraha.cz";
+  // const baseUrl = "https://www.spadovostpraha.cz";
+  const baseUrl = "http://localhost:3000";
 
   const path =
     pageType === PageType.School ? `/s/${school}` : `/m/${municipality}`;

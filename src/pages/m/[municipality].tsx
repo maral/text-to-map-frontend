@@ -1,23 +1,23 @@
 import MapPage from "@/components/OldMap/MapPage";
 import {
+  getMunicipalityData,
   getMunicipalitySlugsList,
   loadMunicipalityData,
 } from "@/utils/dataCache";
 import { GetStaticProps, GetStaticPaths } from "next";
-import { Municipality } from "@/types/data";
+import { DataForMap, Municipality } from "@/types/data";
 import { PageType } from "@/types/page";
+import NewMapPage from "../../components/NewMap/NewMapPage";
 
-const MunicipalityPage = ({ municipalities }: MunicipalityPageProps) => {
-  return (
-    <MapPage municipalities={municipalities} pageType={PageType.Municipality} />
-  );
+const MunicipalityPage = ({ data }: MunicipalityPageProps) => {
+  return <NewMapPage data={data} pageType={PageType.Municipality} />;
 };
 MunicipalityPage.displayName = "[municipality]";
 
 export default MunicipalityPage;
 
 interface MunicipalityPageProps {
-  municipalities: Municipality[];
+  data: DataForMap;
 }
 
 export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
@@ -29,20 +29,18 @@ export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
     };
   }
 
-  const municipalityId = context.params.municipality as string;
-  const municipality = loadMunicipalityData(municipalityId);
-
-  if (!municipality) {
+  try {
+    const municipalitySlug = context.params.municipality as string;
+    return {
+      props: {
+        data: getMunicipalityData(municipalitySlug),
+      },
+    };
+  } catch (e) {
     return {
       notFound: true,
     };
   }
-
-  return {
-    props: {
-      municipalities: [municipality],
-    },
-  };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {

@@ -1,6 +1,6 @@
 import { DataForMap, Municipality } from "@/types/data";
 import { PageType } from "@/types/page";
-import { getAllData, getOrdinanceText, getPolygons } from "@/utils/dataCache";
+import { getAllMunicipalities, getOrdinanceText, getPolygons } from "@/utils/dataCache";
 import { GetStaticProps } from "next";
 import NewMapPage from "../components/NewMap/NewMapPage";
 
@@ -26,7 +26,7 @@ interface MunicipalityPageProps {
 export const getStaticProps: GetStaticProps<
   MunicipalityPageProps
 > = async () => {
-  const municipalities: Municipality[] = getAllData();
+  const municipalities: Municipality[] = getAllMunicipalities();
   const polygons = getPolygons();
   const ordinanceText = getOrdinanceText();
 

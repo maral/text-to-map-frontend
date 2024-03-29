@@ -27,6 +27,7 @@ export const createMarkers = (
   addressMarkers: AddressMarkerMap,
   schoolColorIndicesMap: Record<string, number>,
   showDebugInfo: boolean,
+  color?: string,
   lines?: string[]
 ) => {
   let colorIndex = 0;
@@ -41,13 +42,13 @@ export const createMarkers = (
     municipalityLayerGroups.push(layerGroup);
     addressesLayerGroup.addLayer(layerGroup);
     municipality.schools.forEach((school) => {
-      const color = colors[colorIndex % colors.length];
+      const schoolColor = color ?? colors[colorIndex % colors.length];
       schoolColorIndicesMap[school.izo] = colorIndex;
-      const schoolMarker = createSchoolMarker(school, color).addTo(
+      const schoolMarker = createSchoolMarker(school, schoolColor).addTo(
         schoolsLayerGroup
       );
 
-      schoolColors[school.izo] = color;
+      schoolColors[school.izo] = schoolColor;
       addressLayerGroupsMap[school.izo] = layerGroup;
       schoolMarkers[school.izo] = schoolMarker;
 

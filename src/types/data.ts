@@ -29,6 +29,7 @@ export interface School {
 
 export interface Municipality {
   municipalityName: string;
+  code: number;
   schools: School[];
   wholeMunicipalityPoints: Address[];
   unmappedPoints: Address[];
@@ -98,7 +99,7 @@ export interface CityOnMap {
   lng: number;
 }
 
-export type PolygonMap = Record<number, FeatureCollection>;
+export type PolygonMap = { [municipalityCode in string]: FeatureCollection };
 
 export type DataForMap = {
   municipalities: Municipality[];

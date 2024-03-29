@@ -1,6 +1,6 @@
 import { GetStaticProps } from "next";
 import { Municipality } from "@/types/data";
-import { getAllData } from "@/utils/dataCache";
+import { getAllMunicipalities } from "@/utils/dataCache";
 import MapPage from "@/components/OldMap/MapPage";
 import { PageType } from "@/types/page";
 
@@ -15,7 +15,7 @@ interface MunicipalityPageProps {
 export const getStaticProps: GetStaticProps<
   MunicipalityPageProps
 > = async () => {
-  const municipalities: Municipality[] = getAllData(2023);
+  const municipalities: Municipality[] = getAllMunicipalities(2023);
 
   return {
     props: {

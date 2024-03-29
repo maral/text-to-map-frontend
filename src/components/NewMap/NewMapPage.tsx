@@ -1,20 +1,20 @@
-import Head from "next/head";
-import dynamic from "next/dynamic";
-import React, { useRef } from "react";
-import styles from "@/styles/MapPage.module.css";
-import { DataForMap, Municipality } from "@/types/data";
 import Loading from "@/components/Loading";
-import SuggestInput from "../MapPage/SuggestInput";
-import Alert from "../MapPage/Alert";
 import useQueryParams from "@/hooks/useQueryParams";
+import styles from "@/styles/MapPage.module.css";
+import { DataForMap } from "@/types/data";
 import { PageType } from "@/types/page";
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import React, { useRef } from "react";
+import Alert from "../MapPage/Alert";
 import Menu from "../MapPage/Menu";
+import SuggestInput from "../MapPage/SuggestInput";
 
 export interface MapPageProps {
   data: DataForMap;
   pageType: PageType;
-  ordinanceText: string;
-  showDebugInfo: boolean;
+  showDebugInfo?: boolean;
+  ordinanceText?: string;
   year?: number;
 }
 
@@ -22,7 +22,7 @@ export default function NewMapPage({
   data,
   pageType,
   ordinanceText,
-  showDebugInfo,
+  showDebugInfo = false,
   year,
 }: MapPageProps) {
   const { showSearch, showMenu, showControls } = useQueryParams(pageType);
