@@ -1,12 +1,10 @@
-import MapPage from "@/components/OldMap/MapPage";
+import { DataForMap } from "@/types/data";
+import { PageType } from "@/types/page";
 import {
   getMunicipalityData,
-  getMunicipalitySlugsList,
-  loadMunicipalityData,
+  getMunicipalitySlugsList
 } from "@/utils/dataCache";
-import { GetStaticProps, GetStaticPaths } from "next";
-import { DataForMap, Municipality } from "@/types/data";
-import { PageType } from "@/types/page";
+import { GetStaticPaths, GetStaticProps } from "next";
 import NewMapPage from "../../components/NewMap/NewMapPage";
 
 const MunicipalityPage = ({ data }: MunicipalityPageProps) => {

@@ -26,8 +26,6 @@ export const createMap = (
     return () => null;
   }
 
-  console.log(data);
-
   map = prepareMap(element, showControls);
   mapInitialized = true;
   _municipalities = data.municipalities;
