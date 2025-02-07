@@ -26,7 +26,7 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
           JSON s adresními místy ke stažení
         </AboutLink>
         <AboutLink
-          href="mailto:marek.lisy.hk@gmai.com"
+          href="mailto:marek.lisy.hk@gmail.com"
           prependText="Chcete mapu spádových oblastí i pro vaše město nebo nahlásit chybu?"
         >
           Napište mi
