@@ -41,7 +41,7 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
             <a href="https://www.praha.eu/jnp/" target="_blank">
               Magistrátem hl. m. Prahy
             </a>{" "}
-            do 31. 3. 2025.
+            do 31. 3. 2026.
           </em>
         </li>
       </ul>
