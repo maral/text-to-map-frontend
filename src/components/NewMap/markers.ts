@@ -11,11 +11,14 @@ import {
   SchoolMarkerMap,
   AddressMarkerMap,
   CityOnMap,
+  Area,
 } from "@/types/data";
 import { colors, markerRadius, markerWeight } from "./mapUtils";
 import L, { Marker } from "leaflet";
 
 const unmappedMarkerColor = "#ff0000";
+
+type MarkersToCreate = Record<string, { point: Address; areas: Area[] }>;
 
 export const createMarkers = (
   data: DataForMap,
@@ -25,14 +28,12 @@ export const createMarkers = (
   unmappedLayerGroup: AddressLayerGroup,
   schoolMarkers: SchoolMarkerMap,
   addressMarkers: AddressMarkerMap,
-  schoolColorIndicesMap: Record<string, number>,
+  areaColorIndicesMap: Record<string, number>,
   showDebugInfo: boolean,
   color?: string,
   lines?: string[]
 ) => {
-  let colorIndex = 0;
-  const markersToCreate: Record<string, { point: Address; schools: School[] }> =
-    {};
+  const markersToCreate: MarkersToCreate = {};
   const schoolColors: Record<string, string> = {};
   const addressLayerGroupsMap: Record<string, AddressLayerGroup> = {};
 
@@ -41,29 +42,22 @@ export const createMarkers = (
     layerGroup.name = municipality.municipalityName;
     municipalityLayerGroups.push(layerGroup);
     addressesLayerGroup.addLayer(layerGroup);
-    municipality.schools.forEach((school) => {
-      const schoolColor = color ?? colors[colorIndex % colors.length];
-      schoolColorIndicesMap[school.izo] = colorIndex;
-      const schoolMarker = createSchoolMarker(school, schoolColor).addTo(
-        schoolsLayerGroup
-      );
+    municipality.areas.forEach((area) => {
+      area.schools.forEach((school) => {
+        const schoolColor = color ?? colors[areaColorIndicesMap[area.index]];
+        const schoolMarker = createSchoolMarker(school, schoolColor).addTo(
+          schoolsLayerGroup
+        );
 
-      schoolColors[school.izo] = schoolColor;
-      addressLayerGroupsMap[school.izo] = layerGroup;
-      schoolMarkers[school.izo] = schoolMarker;
-
-      // first put the address points' schools together, add them later
-      school.addresses.forEach((point) => {
-        addToMarkersToCreate(point, markersToCreate, school);
+        schoolColors[school.izo] = schoolColor;
+        addressLayerGroupsMap[school.izo] = layerGroup;
+        schoolMarkers[school.izo] = schoolMarker;
       });
 
-      if (school.isWholeMunicipality) {
-        municipality.wholeMunicipalityPoints.forEach((point) => {
-          addToMarkersToCreate(point, markersToCreate, school);
-        });
-      }
-
-      colorIndex++;
+      // first put the address points' schools together, add them later
+      area.addresses.forEach((point) => {
+        addToMarkersToCreate(point, markersToCreate, area);
+      });
     });
 
     if (showDebugInfo) {
@@ -75,14 +69,15 @@ export const createMarkers = (
     }
   });
 
-  Object.values(markersToCreate).forEach(({ point, schools }) => {
-    const colors =
-      schools.length === 0
+  Object.values(markersToCreate).forEach(({ point, areas }) => {
+    const areaColors =
+      areas.length === 0
         ? [unmappedMarkerColor]
-        : schools.map((school) => schoolColors[school.izo]);
+        : areas.map((area) => colors[areaColorIndicesMap[area.index]]);
+    const schools = areas.flatMap((area) => area.schools);
     const newMarkers = createAddressMarker(
       point,
-      colors,
+      areaColors,
       schools.map((s) => schoolMarkers[s.izo]) as SchoolMarker[],
       showDebugInfo && schools.length > 0,
       lines
@@ -100,16 +95,16 @@ export const createMarkers = (
 
 const addToMarkersToCreate = (
   point: Address,
-  markersToCreate: Record<string, { point: Address; schools: School[] }>,
-  school?: School
+  markersToCreate: MarkersToCreate,
+  area?: Area
 ): void => {
   if (!point.lat || !point.lng) {
     return;
   }
 
   if (point.address in markersToCreate) {
-    if (school) {
-      markersToCreate[point.address].schools.push(school);
+    if (area) {
+      markersToCreate[point.address].areas.push(area);
     }
     markersToCreate[point.address].point.lineNumbers?.push(
       ...(point.lineNumbers ?? [])
@@ -117,7 +112,7 @@ const addToMarkersToCreate = (
   } else {
     markersToCreate[point.address] = {
       point,
-      schools: school ? [school] : [],
+      areas: area ? [area] : [],
     };
   }
 };

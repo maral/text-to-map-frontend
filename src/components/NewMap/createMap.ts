@@ -137,17 +137,20 @@ const findPointByGPS = (lat: number, lng: number) => {
   let minDistancePoint = null;
 
   for (const municipality of _municipalities) {
-    for (const school of municipality.schools) {
-      for (const point of school.addresses) {
-        if (!point.lat || !point.lng) {
-          continue;
-        }
-        const distance = Math.abs(point.lat - lat) + Math.abs(point.lng - lng);
-        if (distance < 0.00001) {
-          return point;
-        } else if (distance < 0.0001 && distance < minDistance) {
-          minDistance = distance;
-          minDistancePoint = point;
+    for (const area of municipality.areas) {
+      for (const school of area.schools) {
+        for (const point of school.addresses) {
+          if (!point.lat || !point.lng) {
+            continue;
+          }
+          const distance =
+            Math.abs(point.lat - lat) + Math.abs(point.lng - lng);
+          if (distance < 0.00001) {
+            return point;
+          } else if (distance < 0.0001 && distance < minDistance) {
+            minDistance = distance;
+            minDistancePoint = point;
+          }
         }
       }
     }

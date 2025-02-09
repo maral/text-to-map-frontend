@@ -17,19 +17,25 @@ import {
   MultiPolygon,
   Polygon,
 } from "@turf/helpers";
-import L, { Circle, FeatureGroup, Map, Polyline, PopupEvent } from "leaflet";
+import L, {
+  Circle,
+  FeatureGroup,
+  LatLngBounds,
+  Map,
+  Polyline,
+  PopupEvent,
+} from "leaflet";
+import shuffleSeed from "shuffle-seed";
 import { createMarkers } from "./markers";
 
 export const colors = [
-  "#d33d81",
-  "#0ea13b",
-  "#0082ad",
-  "#f17b5a",
-  "#c45a18",
-  "#2bc6d9",
-  "#c686d0",
-  "#81b2e9",
-  "#6279bd",
+  "#d33d81", // pink
+  "#0ea13b", // green
+  "#0082ad", // blue
+  "#f17b5a", // orange
+  "#2bc6d9", // turquoise
+  "#8335ff", // purple
+  "#814a22", // brown
 ];
 
 const unmappedPolygonColor = "#888888";
@@ -113,6 +119,7 @@ const setUpSchoolMarkersEvents = (
       resetAllHighlights();
       schoolHighlighted = true;
       lastPolygonLayers = polygonLayers;
+      let bounds: LatLngBounds | null = null;
       for (const polygonLayer of polygonLayers) {
         // when we click on a school marker, we want to hide all other polygons
         // leave only the one that is related to the school
@@ -120,19 +127,26 @@ const setUpSchoolMarkersEvents = (
           const layer = _layer as L.Polygon & {
             feature: Feature<Polygon | MultiPolygon>;
           };
-          if (layer.feature.properties?.schoolIzo !== schoolIzo) {
+          if (layer.feature.properties?.schoolIzos.includes(schoolIzo)) {
+            if (bounds === null) {
+              bounds = layer.getBounds();
+            } else {
+              bounds.extend(layer.getBounds());
+            }
+            layer.setStyle({ color: layer.options.fillColor });
+          } else {
             layer.setStyle({
               fillOpacity: 0.1,
               opacity: 0.3,
               fillColor: "#888",
             });
             layer.bringToBack();
-          } else {
-            const map = (polygonLayer as any)._map;
-            map.flyToBounds(layer.getBounds(), { duration: 0.7 });
-            layer.setStyle({ color: layer.options.fillColor });
           }
         });
+      }
+      const map = (polygonLayers[0] as any)._map;
+      if (bounds !== null) {
+        map.flyToBounds(bounds, { duration: 0.7 });
       }
       selectSchool(marker);
     });
@@ -277,7 +291,7 @@ export const createCityLayers = ({
   const municipalityLayerGroups: AddressLayerGroup[] = [];
   const schoolMarkers: SchoolMarkerMap = {};
   const addressMarkers: AddressMarkerMap = {};
-  const schoolColorIndicesMap: Record<string, number> = {};
+  const areaColorIndicesMap: Record<string, number> = {};
 
   addressesLayerGroup.cityCode = cityCode;
   addressesLayerGroup.type = "addresses";
@@ -285,6 +299,18 @@ export const createCityLayers = ({
   schoolsLayerGroup.type = "schools";
 
   const unmappedLayerGroup: AddressLayerGroup = L.layerGroup();
+
+  const allFeatures = Object.values(data.polygons).flatMap(
+    (polygon) => polygon.features
+  );
+  const monsterCollection: FeatureCollection = {
+    type: "FeatureCollection",
+    features: allFeatures,
+  };
+
+  const polygonLayers = [monsterCollection].map((polygon) =>
+    createPolygonLayer(polygon, schoolMarkers, areaColorIndicesMap, color)
+  );
 
   createMarkers(
     data,
@@ -294,21 +320,10 @@ export const createCityLayers = ({
     unmappedLayerGroup,
     schoolMarkers,
     addressMarkers,
-    schoolColorIndicesMap,
+    areaColorIndicesMap,
     showDebugInfo,
     color,
     lines
-  );
-
-  const allFeatures = Object.values(data.polygons).flatMap(
-    (polygon) => polygon.features
-  );
-  const monsterCollection: FeatureCollection = {
-    type: "FeatureCollection",
-    features: allFeatures,
-  };
-  const polygonLayers = [monsterCollection].map((polygon) =>
-    createPolygonLayer(polygon, schoolMarkers, schoolColorIndicesMap, color)
   );
 
   setUpSchoolMarkersEvents(schoolMarkers, polygonLayers);
@@ -328,22 +343,23 @@ export const createCityLayers = ({
 const createPolygonLayer = (
   polygon: FeatureCollection,
   schoolMarkers: SchoolMarkerMap,
-  schoolColorIndicesMap: Record<string, number>,
+  areaColorIndicesMap: Record<string, number>,
   color?: string
 ) => {
+  const colorMapping = shuffleSeed.shuffle(
+    colors.map((_, index) => index),
+    polygon.features[2].properties?.schoolIzos[0]
+  );
   const geoJsonLayer: L.GeoJSON = L.geoJSON(polygon, {
     pane: "overlayPane",
     style: (feature) => {
+      const remappedColorIndex =
+        colorMapping[feature?.properties.colorIndex % colors.length];
+      areaColorIndicesMap[feature?.properties?.areaIndex] = remappedColorIndex;
+
       return feature
         ? {
-            fillColor:
-              color ??
-              (feature?.properties.colorIndex === -1
-                ? unmappedPolygonColor
-                : colors[
-                    schoolColorIndicesMap[feature.properties.schoolIzo] %
-                      colors.length
-                  ]),
+            fillColor: color ?? colors[remappedColorIndex],
             color: "#777",
             weight: 2,
             fillOpacity: 0.4,
@@ -368,10 +384,12 @@ const handleMouseMove = (
 
   const relatedSchoolMarkers = geoJsonLayer
     .getLayers()
-    .map((layer) => {
+    .flatMap((layer) => {
       const feature: Feature<Polygon | MultiPolygon> = (layer as any).feature;
       if (booleanPointInPolygon([e.latlng.lng, e.latlng.lat], feature)) {
-        return schoolMarkers[feature.properties?.schoolIzo];
+        return feature.properties?.schoolIzos.map(
+          (izo: string) => schoolMarkers[izo]
+        );
       }
     })
     .filter((marker) => marker !== undefined) as L.Circle[];

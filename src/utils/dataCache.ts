@@ -10,7 +10,9 @@ import {
 
 let allData: Municipality[];
 
-export const getAllMunicipalities = (year = 2024): Municipality[] => {
+const CURRENT_YEAR = 2025;
+
+export const getAllMunicipalities = (year = CURRENT_YEAR): Municipality[] => {
   if (allData) {
     return allData;
   }
@@ -26,7 +28,7 @@ export const getAllMunicipalities = (year = 2024): Municipality[] => {
 };
 
 export const getMunicipalitySlugsList = (
-  year = 2024
+  year = CURRENT_YEAR
 ): {
   name: string;
   slug: string;
@@ -43,7 +45,7 @@ export const getMunicipalitySlugsList = (
 
 export const loadMunicipalityData = (
   municipalitySlug: string,
-  year = 2024
+  year = CURRENT_YEAR
 ): Municipality | undefined => {
   const allData = getAllMunicipalities(year);
 
@@ -52,55 +54,66 @@ export const loadMunicipalityData = (
   );
 };
 
-export const getSchoolSlugsList = (year = 2024): string[] => {
+export const getSchoolSlugsList = (year = CURRENT_YEAR): string[] => {
   const allData = getAllMunicipalities(year);
 
   return allData
     ? allData.flatMap((municipality) =>
-        municipality.schools.map((school) => slug(school.name))
+        municipality.areas.flatMap((area) =>
+          area.schools.map((school) => slug(school.name))
+        )
       )
     : [];
 };
 
-export const getSchoolSlugsMap = (year = 2024): SchoolSlugs => {
+export const getSchoolSlugsMap = (year = CURRENT_YEAR): SchoolSlugs => {
   const allData = getAllMunicipalities(year);
 
   return allData
     ? allData.map((municipality) => ({
         municipalityName: municipality.municipalityName,
-        schools: municipality.schools.map((school) => ({
-          name: school.name,
-          slug: slug(school.name),
-        })),
+        schools: municipality.areas.flatMap((area) =>
+          area.schools.map((school) => ({
+            name: school.name,
+            slug: slug(school.name),
+          }))
+        ),
       }))
     : [];
 };
 
 export const loadSchoolData = (
   schoolSlug: string,
-  year = 2024
+  year = CURRENT_YEAR
 ): Municipality => {
   const allData = getAllMunicipalities(year);
 
   for (const municipality of allData) {
-    const school = municipality.schools.find(
-      (school) => schoolSlug === slug(school.name)
-    );
-    if (school) {
-      return {
-        ...municipality,
-        schools: [school],
-      };
+    for (const area of municipality.areas) {
+      const school = area.schools.find(
+        (school) => schoolSlug === slug(school.name)
+      );
+      if (school) {
+        return {
+          ...municipality,
+          areas: [
+            {
+              ...area,
+              schools: [school],
+            },
+          ],
+        };
+      }
     }
   }
   throw new Error(`School ${schoolSlug} not found`);
 };
 
-export const getOrdinanceText = (): string => {
-  return fs.readFileSync("public/vyhlaska_praha.txt", "utf8");
+export const getOrdinanceText = (year = CURRENT_YEAR): string => {
+  return fs.readFileSync(`public/vyhlaska_praha${year}.txt`, "utf8");
 };
 
-export const getPolygons = (year = 2024): PolygonMap => {
+export const getPolygons = (year = CURRENT_YEAR): PolygonMap => {
   const filePath = path.join(
     process.cwd(),
     `public/praha-polygons${year}.json`
@@ -109,7 +122,7 @@ export const getPolygons = (year = 2024): PolygonMap => {
   return JSON.parse(fileContents);
 };
 
-export const getAllData = (year = 2024): DataForMap => {
+export const getAllData = (year = CURRENT_YEAR): DataForMap => {
   return {
     municipalities: getAllMunicipalities(year),
     polygons: getPolygons(year),
@@ -118,7 +131,7 @@ export const getAllData = (year = 2024): DataForMap => {
 
 export const getMunicipalityData = (
   municipalitySlug: string,
-  year = 2024
+  year = CURRENT_YEAR
 ): DataForMap => {
   const schoolMunicipality = loadMunicipalityData(municipalitySlug, year);
   const municipalityCode = getMunicipalityCodeBySlug(municipalitySlug, year);
@@ -132,7 +145,10 @@ export const getMunicipalityData = (
   };
 };
 
-export const getSchoolData = (schoolSlug: string, year = 2024): DataForMap => {
+export const getSchoolData = (
+  schoolSlug: string,
+  year = CURRENT_YEAR
+): DataForMap => {
   const schoolMunicipality = loadSchoolData(schoolSlug, year);
   const { schoolIzo, municipalityCode } = getCodesBySchoolSlug(
     schoolSlug,
@@ -157,7 +173,7 @@ export const getSchoolData = (schoolSlug: string, year = 2024): DataForMap => {
 
 const getMunicipalityCodeBySlug = (
   municipalitySlug: string,
-  year = 2024
+  year = CURRENT_YEAR
 ): number => {
   const allData = getAllMunicipalities(year);
 
@@ -172,16 +188,18 @@ const getMunicipalityCodeBySlug = (
 
 const getCodesBySchoolSlug = (
   schoolSlug: string,
-  year = 2024
+  year = CURRENT_YEAR
 ): { schoolIzo: string; municipalityCode: number } => {
   const allData = getAllMunicipalities(year);
 
   for (const municipality of allData) {
-    const school = municipality.schools.find(
-      (school) => schoolSlug === slug(school.name)
-    );
-    if (school) {
-      return { schoolIzo: school.izo, municipalityCode: municipality.code };
+    for (const area of municipality.areas) {
+      const school = area.schools.find(
+        (school) => schoolSlug === slug(school.name)
+      );
+      if (school) {
+        return { schoolIzo: school.izo, municipalityCode: municipality.code };
+      }
     }
   }
   throw new Error(`School ${schoolSlug} not found`);

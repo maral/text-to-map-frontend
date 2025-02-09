@@ -27,11 +27,19 @@ export interface School {
   position: Position;
 }
 
+export interface Area {
+  index: number;
+  schools: School[];
+  addresses: Address[];
+}
+
 export interface Municipality {
   municipalityName: string;
   code: number;
-  schools: School[];
-  wholeMunicipalityPoints: Address[];
+  municipalityType: "city" | "district";
+  cityCodes: number[];
+  districtCodes: number[];
+  areas: Area[];
   unmappedPoints: Address[];
 }
 

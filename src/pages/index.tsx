@@ -17,7 +17,7 @@ interface MunicipalityPageProps {
 export const getStaticProps: GetStaticProps<MunicipalityPageProps> = () => {
   return {
     props: {
-      data: getAllData(2024),
+      data: getAllData(2025),
     },
   };
 };
