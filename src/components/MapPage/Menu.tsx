@@ -24,9 +24,6 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
           <a href="/2024">Vyhláška 2024</a>
         </li>
         <li>
-          <a href="/2023">Vyhláška 2023</a>
-        </li>
-        <li>
           <Link href="/embed">Vložit mapu na web</Link>
         </li>
         <AboutLink href="praha2025.json">

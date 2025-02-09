@@ -37,7 +37,7 @@ const InnerMap = ({
         showControls
       );
     }
-  }, [data, text, mapRef, center, zoom, showControls, isReady, showDebugInfo]);
+  }, [data, text, mapRef, center, zoom, color, showControls, isReady, showDebugInfo]);
 
   return (
     <>
