@@ -1,13 +1,10 @@
 import { DataForMap } from "@/types/data";
-import { PageType } from "@/types/page";
 import { getAllData } from "@/utils/dataCache";
 import { GetStaticProps } from "next";
-import NewMapPage from "../components/NewMap/NewMapPage";
+import MapPage from "../components/MapPage/MapPage";
 
 export default function IndexPage({ data }: MunicipalityPageProps) {
-  return (
-    <NewMapPage data={data} showDebugInfo={false} pageType={PageType.All} />
-  );
+  return <MapPage data={data} showDebugInfo={false} />;
 }
 
 interface MunicipalityPageProps {

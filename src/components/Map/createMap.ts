@@ -6,9 +6,12 @@ import {
   setupPopups,
 } from "./mapUtils";
 import L, { LayerGroup, Map as LeafletMap } from "leaflet";
+import { centerLeafletMapOnMarker } from "./mapUtils";
+import { SuggestionItem } from "../../types/suggestionTypes";
 
 let map: LeafletMap;
 let mapInitialized = false;
+let _onError: (message: string) => void;
 let markers: AddressMarkerMap;
 let _municipalities: Municipality[];
 
@@ -16,19 +19,25 @@ export const createMap = (
   element: HTMLElement,
   data: DataForMap,
   showDebugInfo: boolean,
+  onError: (message: string) => void,
   text?: string,
   center?: [number, number],
   zoom?: number,
   color?: string,
   showControls: boolean = true
-): (() => void) => {
+): {
+  onSuggestionSelect: (item: SuggestionItem) => void;
+} => {
   if (!element || map || mapInitialized) {
-    return () => null;
+    return {
+      onSuggestionSelect: onSuggest,
+    };
   }
 
   map = prepareMap(element, showControls);
   mapInitialized = true;
   _municipalities = data.municipalities;
+  _onError = onError;
 
   L.circle([52, 12], {
     radius: 8,
@@ -102,34 +111,9 @@ export const createMap = (
   map.on("zoomend", zoomEndHandler);
   zoomEndHandler();
 
-  return () => {
-    map.remove();
-    mapInitialized = false;
+  return {
+    onSuggestionSelect: onSuggest,
   };
-};
-
-import { centerLeafletMapOnMarker } from "./mapUtils";
-
-interface SuggestData {
-  data: {
-    latitude: number;
-    longitude: number;
-  };
-  phrase: string;
-}
-
-let _onError: (message: string) => void;
-
-export const loadMapyCzSuggest = (
-  element: HTMLElement,
-  onError: (message: string) => void
-) => {
-  let suggest = new SMap.Suggest(element, {
-    provider: new SMap.SuggestProvider({}),
-  });
-  suggest.addListener("suggest", onSuggest);
-  suggest.addListener("enter", onSuggest);
-  _onError = onError;
 };
 
 const findPointByGPS = (lat: number, lng: number) => {
@@ -138,19 +122,16 @@ const findPointByGPS = (lat: number, lng: number) => {
 
   for (const municipality of _municipalities) {
     for (const area of municipality.areas) {
-      for (const school of area.schools) {
-        for (const point of school.addresses) {
-          if (!point.lat || !point.lng) {
-            continue;
-          }
-          const distance =
-            Math.abs(point.lat - lat) + Math.abs(point.lng - lng);
-          if (distance < 0.00001) {
-            return point;
-          } else if (distance < 0.0001 && distance < minDistance) {
-            minDistance = distance;
-            minDistancePoint = point;
-          }
+      for (const point of area.addresses) {
+        if (!point.lat || !point.lng) {
+          continue;
+        }
+        const distance = Math.abs(point.lat - lat) + Math.abs(point.lng - lng);
+        if (distance < 0.00001) {
+          return point;
+        } else if (distance < 0.0001 && distance < minDistance) {
+          minDistance = distance;
+          minDistancePoint = point;
         }
       }
     }
@@ -158,23 +139,14 @@ const findPointByGPS = (lat: number, lng: number) => {
   return minDistancePoint;
 };
 
-const onSuggest = (suggestData: SuggestData) => {
+export const onSuggest = (item: SuggestionItem) => {
   let marker;
-  const key = Object.keys(markers).find((k) =>
-    k.startsWith(suggestData.phrase)
-  );
+  const key = Object.keys(markers).find((k) => k.startsWith(item.name));
 
   if (key) {
     marker = markers[key];
-  } else if (
-    suggestData.data &&
-    suggestData.data.longitude &&
-    suggestData.data.latitude
-  ) {
-    const addressPoint = findPointByGPS(
-      suggestData.data.latitude,
-      suggestData.data.longitude
-    );
+  } else if (item.position.lat && item.position.lon) {
+    const addressPoint = findPointByGPS(item.position.lat, item.position.lon);
     marker = addressPoint ? markers[addressPoint.address] : null;
   }
 
@@ -182,7 +154,7 @@ const onSuggest = (suggestData: SuggestData) => {
     centerLeafletMapOnMarker(map, marker[0]);
   } else {
     if (_onError) {
-      _onError(`Adresu '${suggestData.phrase}' jsme na mapě nenašli.`);
+      _onError(`Adresu '${item.name}' jsme na mapě nenašli.`);
     }
   }
 };

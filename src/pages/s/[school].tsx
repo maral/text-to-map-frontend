@@ -1,11 +1,10 @@
-import NewMapPage from "@/components/NewMap/NewMapPage";
+import MapPage from "@/components/MapPage/MapPage";
 import { DataForMap } from "@/types/data";
-import { PageType } from "@/types/page";
 import { getSchoolData, getSchoolSlugsList } from "@/utils/dataCache";
 import { GetStaticPaths, GetStaticProps } from "next";
 
 const SchoolPage = ({ data }: SchoolPageProps) => {
-  return <NewMapPage data={data} pageType={PageType.School} />;
+  return <MapPage data={data} />;
 };
 SchoolPage.displayName = "SchoolPage";
 

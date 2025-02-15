@@ -1,14 +1,13 @@
 import { DataForMap } from "@/types/data";
-import { PageType } from "@/types/page";
 import {
   getMunicipalityData,
-  getMunicipalitySlugsList
+  getMunicipalitySlugsList,
 } from "@/utils/dataCache";
 import { GetStaticPaths, GetStaticProps } from "next";
-import NewMapPage from "../../components/NewMap/NewMapPage";
+import MapPage from "../../components/MapPage/MapPage";
 
 const MunicipalityPage = ({ data }: MunicipalityPageProps) => {
-  return <NewMapPage data={data} pageType={PageType.Municipality} />;
+  return <MapPage data={data} />;
 };
 MunicipalityPage.displayName = "[municipality]";
 

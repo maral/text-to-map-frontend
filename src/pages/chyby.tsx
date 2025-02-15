@@ -1,20 +1,18 @@
 import { DataForMap, Municipality } from "@/types/data";
-import { PageType } from "@/types/page";
-import { getAllMunicipalities, getOrdinanceText, getPolygons } from "@/utils/dataCache";
+import {
+  getAllMunicipalities,
+  getOrdinanceText,
+  getPolygons,
+} from "@/utils/dataCache";
 import { GetStaticProps } from "next";
-import NewMapPage from "../components/NewMap/NewMapPage";
+import MapPage from "../components/MapPage/MapPage";
 
 export default function IndexPage({
   data,
   ordinanceText,
 }: MunicipalityPageProps) {
   return (
-    <NewMapPage
-      data={data}
-      showDebugInfo={true}
-      pageType={PageType.All}
-      ordinanceText={ordinanceText}
-    />
+    <MapPage data={data} showDebugInfo={true} ordinanceText={ordinanceText} />
   );
 }
 

@@ -7,6 +7,10 @@
   min-height: 100vh;
 }
 
+.map {
+  height: 100vh;
+}
+
 .suggest {
   position: absolute;
   top: 0;
@@ -21,10 +25,15 @@
   left: 60px;
 }
 
-
 .suggest input {
-  height: 48px;
+  height: 32px;
   border: 2px solid rgba(0,0,0,0.3);
+}
+
+.searchInput {
+  border-radius: 5px !important;
+  border-width: 2px !important;
+  border-color: rgba(0,0,0,0.4) !important;
 }
 
 .alert {
