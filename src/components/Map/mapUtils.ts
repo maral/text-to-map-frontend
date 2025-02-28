@@ -348,7 +348,7 @@ const createPolygonLayer = (
 ) => {
   const colorMapping = shuffleSeed.shuffle(
     colors.map((_, index) => index),
-    polygon.features[2].properties?.schoolIzos[0]
+    polygon.features[2]?.properties?.schoolIzos[0] ?? "default"
   );
   const geoJsonLayer: L.GeoJSON = L.geoJSON(polygon, {
     pane: "overlayPane",

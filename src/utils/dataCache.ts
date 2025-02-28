@@ -36,10 +36,12 @@ export const getMunicipalitySlugsList = (
   const allData = getAllMunicipalities(year);
 
   return allData
-    ? allData.map((municipality) => ({
-        name: municipality.municipalityName,
-        slug: slug(municipality.municipalityName),
-      }))
+    ? allData
+        .map((municipality) => ({
+          name: municipality.municipalityName,
+          slug: slug(municipality.municipalityName),
+        }))
+        .sort((a, b) => pragueDistrictSortingFuction(a.name, b.name))
     : [];
 };
 
@@ -67,7 +69,9 @@ export const getSchoolSlugsList = (year = CURRENT_YEAR): string[] => {
 };
 
 export const getSchoolSlugsMap = (year = CURRENT_YEAR): SchoolSlugs => {
-  const allData = getAllMunicipalities(year);
+  const allData = getAllMunicipalities(year).sort((a, b) =>
+    pragueDistrictSortingFuction(a.municipalityName, b.municipalityName)
+  );
 
   return allData
     ? allData.map((municipality) => ({
@@ -156,8 +160,8 @@ export const getSchoolData = (
   );
   const polygons = getPolygons(year);
 
-  const schoolPolygon = polygons[municipalityCode].features.find(
-    (feature) => feature.properties?.schoolIzo === schoolIzo
+  const schoolPolygon = polygons[municipalityCode].features.find((feature) =>
+    feature.properties?.schoolIzos.includes(schoolIzo)
   );
 
   return {
@@ -203,4 +207,13 @@ const getCodesBySchoolSlug = (
     }
   }
   throw new Error(`School ${schoolSlug} not found`);
+};
+
+const pragueDistrictSortingFuction = (a: string, b: string) => {
+  if (a.includes("Městská část Praha ") && a.length < b.length) {
+    return -1;
+  } else if (b.includes("Městská část Praha ") && a.length > b.length) {
+    return 1;
+  }
+  return a.localeCompare(b);
 };

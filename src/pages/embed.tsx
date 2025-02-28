@@ -371,7 +371,7 @@ const createUrl = (
   fixedColor: boolean,
   color: string
 ): string => {
-  const baseUrl = "https://www.spadovostpraha.cz";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.spadovostpraha.cz";
 
   const path =
     pageType === PageType.School ? `/s/${school}` : `/m/${municipality}`;

@@ -38,7 +38,7 @@ export const getStaticProps: GetStaticProps<SchoolPageProps> = async (
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const schools = getSchoolSlugsList(2024);
+  const schools = getSchoolSlugsList(2025);
 
   const paths = schools.map((school: string) => ({
     params: { school },
