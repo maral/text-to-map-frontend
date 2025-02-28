@@ -79,7 +79,7 @@ const InnerMap = ({ data, text, showDebugInfo, year }: InnerMapProps) => {
           <SearchInput onSelect={onSelect} />
         </div>
       )}
-      <div ref={mapRef} className={styles.map} />;
+      <div ref={mapRef} className={styles.map} />
       {showMenu && (
         <Menu
           moveLeft={data.municipalities.length > 1 && showControls}
