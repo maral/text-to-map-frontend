@@ -10,7 +10,7 @@ import {
 
 let allData: Municipality[];
 
-const CURRENT_YEAR = 2025;
+const CURRENT_YEAR = 2026;
 
 export const getAllMunicipalities = (year = CURRENT_YEAR): Municipality[] => {
   if (allData) {

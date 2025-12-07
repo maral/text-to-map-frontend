@@ -18,7 +18,10 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
       <div className={styles.tag}>menu</div>
       <ul className={styles.collapsed}>
         <li>
-          <a href="/">Vyhláška 2025</a>
+          <a href="/">Vyhláška 2026</a>
+        </li>
+        <li>
+          <a href="/2025">Vyhláška 2025</a>
         </li>
         <li>
           <a href="/2024">Vyhláška 2024</a>
@@ -26,7 +29,7 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
         <li>
           <Link href="/embed">Vložit mapu na web</Link>
         </li>
-        <AboutLink href="praha2025.json">
+        <AboutLink href="praha2026.json">
           JSON s adresními místy ke stažení
         </AboutLink>
         <AboutLink
@@ -41,7 +44,7 @@ export default function Menu({ moveLeft = false, year }: MenuProps) {
             <a href="https://www.praha.eu/jnp/" target="_blank">
               Magistrátem hl. m. Prahy
             </a>{" "}
-            do 31. 3. 2026.
+            do 15. 1. 2027.
           </em>
         </li>
       </ul>
