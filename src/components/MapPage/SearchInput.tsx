@@ -55,7 +55,7 @@ export function SearchInput({ onSelect }: SearchInputProps) {
   const [lastSelectedValue, setLastSelectedValue] =
     useState<SuggestionOption | null>(null);
 
-  const selectRef = useRef<any>();
+  const selectRef = useRef<any>(null);
 
   const onInputChange = (inputValue: string, { action }: InputActionMeta) => {
     if (action === "input-blur") {
