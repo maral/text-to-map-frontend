@@ -1,7 +1,7 @@
 import useQueryParams from "@/hooks/useQueryParams";
 import "leaflet/dist/leaflet.css";
 import styles from "@/styles/MapPage.module.css";
-import { DataForMap } from "@/types/data";
+import { DataForMap, DeferredAddresses } from "@/types/data";
 import { useEffect, useRef, useState } from "react";
 import Alert from "../MapPage/Alert";
 import Menu from "../MapPage/Menu";
@@ -14,9 +14,16 @@ interface InnerMapProps {
   showDebugInfo: boolean;
   text?: string;
   year?: number;
+  deferredAddresses?: DeferredAddresses;
 }
 
-const InnerMap = ({ data, text, showDebugInfo, year }: InnerMapProps) => {
+const InnerMap = ({
+  data,
+  text,
+  showDebugInfo,
+  year,
+  deferredAddresses,
+}: InnerMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInitialized = useRef(false);
   const { center, zoom, isReady, showControls, showSearch, showMenu, color } =
@@ -48,7 +55,8 @@ const InnerMap = ({ data, text, showDebugInfo, year }: InnerMapProps) => {
         center,
         zoom,
         color,
-        showControls
+        showControls,
+        deferredAddresses
       );
 
       if (onSuggestionSelect) {
@@ -66,6 +74,7 @@ const InnerMap = ({ data, text, showDebugInfo, year }: InnerMapProps) => {
     showControls,
     isReady,
     showDebugInfo,
+    deferredAddresses,
   ]);
 
   return (

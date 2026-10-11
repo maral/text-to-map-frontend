@@ -114,6 +114,25 @@ export type DataForMap = {
   polygons: PolygonMap;
 };
 
+/**
+ * Addresses served separately from the page (see /data/addresses/[year]), so
+ * the map can render schools and polygons first. Keyed by municipality code,
+ * with areas in the same order as in the page data.
+ */
+export interface AddressesFile {
+  version: string;
+  municipalities: Record<
+    string,
+    { areas: Address[][]; unmappedPoints: Address[] }
+  >;
+}
+
+/** Where the page loads its addresses from, and which version it expects. */
+export interface DeferredAddresses {
+  url: string;
+  version: string;
+}
+
 export type DataForMapByCityCodes = Record<number, DataForMap>;
 
 export type LoadedCitiesData = Record<number, CityData>;

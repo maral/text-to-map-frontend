@@ -26,7 +26,7 @@ import L, {
   PopupEvent,
 } from "leaflet";
 import shuffleSeed from "shuffle-seed";
-import { createMarkers } from "./markers";
+import { AddAddressMarkers, createMarkers } from "./markers";
 
 export const colors = [
   "#d33d81", // pink
@@ -283,6 +283,7 @@ export const createCityLayers = ({
   unmappedLayerGroup: AddressLayerGroup;
   municipalityLayerGroups: AddressLayerGroup[];
   addressMarkers: AddressMarkerMap;
+  addAddressMarkers: AddAddressMarkers;
 } => {
   const addressesLayerGroup: AddressesLayerGroup = L.layerGroup(undefined, {
     pane: "markerPane",
@@ -312,7 +313,7 @@ export const createCityLayers = ({
     createPolygonLayer(polygon, schoolMarkers, areaColorIndicesMap, color)
   );
 
-  createMarkers(
+  const addAddressMarkers = createMarkers(
     data,
     municipalityLayerGroups,
     addressesLayerGroup,
@@ -337,6 +338,7 @@ export const createCityLayers = ({
     unmappedLayerGroup,
     municipalityLayerGroups,
     addressMarkers,
+    addAddressMarkers,
   };
 };
 

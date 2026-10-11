@@ -12,6 +12,7 @@ import {
   AddressMarkerMap,
   CityOnMap,
   Area,
+  Municipality,
 } from "@/types/data";
 import { colors, markerRadius, markerWeight } from "./mapUtils";
 import L, { Marker } from "leaflet";
@@ -29,6 +30,14 @@ const escapeHtml = (text: string): string =>
 
 type MarkersToCreate = Record<string, { point: Address; areas: Area[] }>;
 
+export type AddAddressMarkers = (municipalities: Municipality[]) => void;
+
+/**
+ * Creates school markers and address markers for the addresses in `data`.
+ * Returns a function that adds address markers later, for pages that load
+ * addresses after the map is shown; it must get the same municipalities, in
+ * the same order, with addresses filled in.
+ */
 export const createMarkers = (
   data: DataForMap,
   municipalityLayerGroups: AddressLayerGroup[],
@@ -41,8 +50,7 @@ export const createMarkers = (
   showDebugInfo: boolean,
   color?: string,
   lines?: string[]
-) => {
-  const markersToCreate: MarkersToCreate = {};
+): AddAddressMarkers => {
   const schoolColors: Record<string, string> = {};
   const addressLayerGroupsMap: Record<string, AddressLayerGroup> = {};
 
@@ -62,44 +70,55 @@ export const createMarkers = (
         addressLayerGroupsMap[school.izo] = layerGroup;
         schoolMarkers[school.izo] = schoolMarker;
       });
-
-      // first put the address points' schools together, add them later
-      area.addresses.forEach((point) => {
-        addToMarkersToCreate(point, markersToCreate, area);
-      });
     });
-
-    if (showDebugInfo) {
-      municipality.unmappedPoints.forEach((point) => {
-        if (!point.address.includes("č.ev.")) {
-          addToMarkersToCreate(point, markersToCreate);
-        }
-      });
-    }
   });
 
-  Object.values(markersToCreate).forEach(({ point, areas }) => {
-    const areaColors =
-      areas.length === 0
-        ? [unmappedMarkerColor]
-        : areas.map((area) => colors[areaColorIndicesMap[area.index]]);
-    const schools = areas.flatMap((area) => area.schools);
-    const newMarkers = createAddressMarker(
-      point,
-      areaColors,
-      schools.map((s) => schoolMarkers[s.izo]) as SchoolMarker[],
-      showDebugInfo && schools.length > 0,
-      lines
-    );
-    addressMarkers[point.address] = newMarkers;
-    newMarkers.forEach((marker) => {
-      if (schools.length === 0) {
-        unmappedLayerGroup.addLayer(marker);
-      } else {
-        addressLayerGroupsMap[schools[0].izo].addLayer(marker);
+  const addAddressMarkers: AddAddressMarkers = (municipalities) => {
+    const markersToCreate: MarkersToCreate = {};
+
+    municipalities.forEach((municipality) => {
+      // first put the address points' schools together, add them later
+      municipality.areas.forEach((area) => {
+        area.addresses.forEach((point) => {
+          addToMarkersToCreate(point, markersToCreate, area);
+        });
+      });
+
+      if (showDebugInfo) {
+        municipality.unmappedPoints.forEach((point) => {
+          if (!point.address.includes("č.ev.")) {
+            addToMarkersToCreate(point, markersToCreate);
+          }
+        });
       }
     });
-  });
+
+    Object.values(markersToCreate).forEach(({ point, areas }) => {
+      const areaColors =
+        areas.length === 0
+          ? [unmappedMarkerColor]
+          : areas.map((area) => colors[areaColorIndicesMap[area.index]]);
+      const schools = areas.flatMap((area) => area.schools);
+      const newMarkers = createAddressMarker(
+        point,
+        areaColors,
+        schools.map((s) => schoolMarkers[s.izo]) as SchoolMarker[],
+        showDebugInfo && schools.length > 0,
+        lines
+      );
+      addressMarkers[point.address] = newMarkers;
+      newMarkers.forEach((marker) => {
+        if (schools.length === 0) {
+          unmappedLayerGroup.addLayer(marker);
+        } else {
+          addressLayerGroupsMap[schools[0].izo].addLayer(marker);
+        }
+      });
+    });
+  };
+
+  addAddressMarkers(data.municipalities);
+  return addAddressMarkers;
 };
 
 const addToMarkersToCreate = (

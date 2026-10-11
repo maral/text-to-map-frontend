@@ -1,8 +1,11 @@
+import { createHash } from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import slug from "slug";
 import {
+  AddressesFile,
   DataForMap,
+  DeferredAddresses,
   Municipality,
   PolygonMap,
   SchoolSlugs,
@@ -49,6 +52,61 @@ const loadArchivedData = async (year: number): Promise<DataForMap> => {
 
 export const getAllData = (year?: number): Promise<DataForMap> =>
   loadData(year);
+
+// Years with an address file at /data/addresses/[year].
+export const ADDRESS_FILE_YEARS = Array.from(
+  new Set([...years.archivedYears, CURRENT_YEAR])
+);
+
+const addressFiles = new Map<number, Promise<AddressesFile>>();
+
+export const getAddressesFile = (year = CURRENT_YEAR) => {
+  let addressFile = addressFiles.get(year);
+  if (!addressFile) {
+    addressFile = loadData(year).then(({ municipalities }) => {
+      const byCode: AddressesFile["municipalities"] = {};
+      for (const { code, areas, unmappedPoints } of municipalities) {
+        byCode[code] = {
+          areas: areas.map((area) => area.addresses),
+          unmappedPoints,
+        };
+      }
+      const version = createHash("sha256")
+        .update(JSON.stringify(byCode))
+        .digest("hex")
+        .slice(0, 16);
+      return { version, municipalities: byCode };
+    });
+    addressFiles.set(year, addressFile);
+    addressFile.catch(() => addressFiles.delete(year));
+  }
+  return addressFile;
+};
+
+/**
+ * All data for the map except addresses, which the browser loads after
+ * showing the map. Used by pages with all of Prague, where addresses are
+ * over 90 % of the data.
+ */
+export const getDataWithDeferredAddresses = async (
+  year = CURRENT_YEAR
+): Promise<{ data: DataForMap; deferredAddresses: DeferredAddresses }> => {
+  const [{ municipalities, polygons }, { version }] = await Promise.all([
+    loadData(year),
+    getAddressesFile(year),
+  ]);
+  return {
+    data: {
+      municipalities: municipalities.map((municipality) => ({
+        ...municipality,
+        areas: municipality.areas.map((area) => ({ ...area, addresses: [] })),
+        unmappedPoints: [],
+      })),
+      polygons,
+    },
+    deferredAddresses: { url: `/data/addresses/${year}`, version },
+  };
+};
 
 export const getMunicipalitySlugsList = async (
   year?: number

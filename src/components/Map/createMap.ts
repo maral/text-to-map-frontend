@@ -1,4 +1,10 @@
-import { AddressMarkerMap, DataForMap, Municipality } from "@/types/data";
+import {
+  AddressesFile,
+  AddressMarkerMap,
+  DataForMap,
+  DeferredAddresses,
+  Municipality,
+} from "@/types/data";
 import {
   createCityLayers,
   createZoomEndHandler,
@@ -14,6 +20,9 @@ let mapInitialized = false;
 let _onError: (message: string) => void;
 let markers: AddressMarkerMap;
 let _municipalities: Municipality[];
+// Resolves once address markers exist; loads deferred addresses if needed.
+let ensureAddresses: () => Promise<void> = () => Promise.resolve();
+let addressesReady = true;
 
 export const createMap = (
   element: HTMLElement,
@@ -24,7 +33,8 @@ export const createMap = (
   center?: [number, number],
   zoom?: number,
   color?: string,
-  showControls: boolean = true
+  showControls: boolean = true,
+  deferredAddresses?: DeferredAddresses
 ): {
   onSuggestionSelect: (item: SuggestionItem) => void;
 } => {
@@ -55,6 +65,7 @@ export const createMap = (
     polygonLayerGroup,
     municipalityLayerGroups,
     addressMarkers,
+    addAddressMarkers,
   } = createCityLayers({
     data,
     showDebugInfo,
@@ -63,6 +74,26 @@ export const createMap = (
   });
 
   markers = addressMarkers;
+
+  if (deferredAddresses) {
+    addressesReady = false;
+    let loading: Promise<void> | undefined;
+    ensureAddresses = () => {
+      loading ??= fetchAddresses(deferredAddresses, data.municipalities)
+        .then((municipalities) => {
+          _municipalities = municipalities;
+          addAddressMarkers(municipalities);
+          addressesReady = true;
+        })
+        .catch((error) => {
+          // Let the next search try again.
+          loading = undefined;
+          throw error;
+        });
+      return loading;
+    };
+    ensureAddresses().catch((error) => onError(addressesErrorMessage(error)));
+  }
 
   const layerGroupsForControl: Record<string, LayerGroup> = {};
 
@@ -116,6 +147,46 @@ export const createMap = (
   };
 };
 
+class DataChangedError extends Error {}
+
+const addressesErrorMessage = (error: unknown) =>
+  error instanceof DataChangedError
+    ? "Data na mapě byla mezitím aktualizována. Obnovte prosím stránku."
+    : "Nepodařilo se načíst adresní místa. Zkuste prosím obnovit stránku.";
+
+/**
+ * Loads addresses served separately from the page and puts them into the
+ * page's municipalities. The version check guards against a page from one
+ * deployment receiving addresses from a newer one, whose areas may differ.
+ */
+const fetchAddresses = async (
+  { url, version }: DeferredAddresses,
+  municipalities: Municipality[]
+): Promise<Municipality[]> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`GET ${url} failed: ${response.status}`);
+  }
+  const file: AddressesFile = await response.json();
+  if (file.version !== version) {
+    throw new DataChangedError(`Expected addresses ${version}, got ${file.version}`);
+  }
+  return municipalities.map((municipality) => {
+    const addresses = file.municipalities[municipality.code];
+    if (addresses?.areas.length !== municipality.areas.length) {
+      throw new DataChangedError(`Addresses of ${municipality.code} don't match`);
+    }
+    return {
+      ...municipality,
+      areas: municipality.areas.map((area, index) => ({
+        ...area,
+        addresses: addresses.areas[index],
+      })),
+      unmappedPoints: addresses.unmappedPoints,
+    };
+  });
+};
+
 const findPointByGPS = (lat: number, lng: number) => {
   let minDistance = 9;
   let minDistancePoint = null;
@@ -139,7 +210,17 @@ const findPointByGPS = (lat: number, lng: number) => {
   return minDistancePoint;
 };
 
-export const onSuggest = (item: SuggestionItem) => {
+export const onSuggest = async (item: SuggestionItem) => {
+  if (!addressesReady) {
+    _onError?.("Načítám adresní místa…");
+  }
+  try {
+    await ensureAddresses();
+  } catch (error) {
+    _onError?.(addressesErrorMessage(error));
+    return;
+  }
+
   let marker;
   const key = Object.keys(markers).find((k) => k.startsWith(item.name));
 
