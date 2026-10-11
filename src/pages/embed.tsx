@@ -401,8 +401,8 @@ interface MunicipalityPageProps {
 export const getStaticProps: GetStaticProps<
   MunicipalityPageProps
 > = async () => {
-  const schoolSlugs = getSchoolSlugsMap();
-  const municipalitySlugs = getMunicipalitySlugsList();
+  const schoolSlugs = await getSchoolSlugsMap();
+  const municipalitySlugs = await getMunicipalitySlugsList();
 
   return {
     props: {

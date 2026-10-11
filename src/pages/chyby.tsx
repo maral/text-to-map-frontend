@@ -11,20 +11,20 @@ export default function IndexPage({
   ordinanceText,
 }: MunicipalityPageProps) {
   return (
-    <MapPage data={data} showDebugInfo={true} ordinanceText={ordinanceText} />
+    <MapPage data={data} showDebugInfo={true} ordinanceText={ordinanceText ?? undefined} />
   );
 }
 
 interface MunicipalityPageProps {
   data: DataForMap;
-  ordinanceText: string;
+  ordinanceText: string | null;
 }
 
 export const getStaticProps: GetStaticProps<
   MunicipalityPageProps
 > = async () => {
-  const { municipalities, polygons } = getAllData();
-  const ordinanceText = getOrdinanceText();
+  const { municipalities, polygons } = await getAllData();
+  const ordinanceText = await getOrdinanceText();
 
   return {
     props: {

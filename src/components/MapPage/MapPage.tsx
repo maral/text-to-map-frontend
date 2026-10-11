@@ -2,7 +2,11 @@ import Loading from "@/components/Loading";
 import { DataForMap } from "@/types/data";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React from "react";
+
+const Map = dynamic(() => import("@/components/Map/InnerMap"), {
+  loading: () => <Loading />,
+  ssr: false,
+});
 
 export interface MapPageProps {
   data: DataForMap;
@@ -17,15 +21,6 @@ export default function MapPage({
   showDebugInfo = false,
   year,
 }: MapPageProps) {
-  const Map = React.useMemo(
-    () =>
-      dynamic(() => import("@/components/Map/InnerMap"), {
-        loading: () => <Loading />,
-        ssr: false,
-      }),
-    []
-  );
-
   return (
     <>
       <Head>

@@ -18,6 +18,15 @@ import L, { Marker } from "leaflet";
 
 const unmappedMarkerColor = "#ff0000";
 
+// Data comes from an external source, so escape it before building popup HTML.
+const escapeHtml = (text: string): string =>
+  text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 type MarkersToCreate = Record<string, { point: Address; areas: Area[] }>;
 
 export const createMarkers = (
@@ -122,7 +131,7 @@ const defaultPosition = [49.19506, 16.606837];
 export const createSchoolMarker = (school: School, color: string) => {
   const schoolTooltip = L.tooltip({
     direction: "top",
-    content: `<div style="text-align: center;">${school.name}</div>`,
+    content: `<div style="text-align: center;">${escapeHtml(school.name)}</div>`,
   });
   return L.circle(
     [
@@ -153,12 +162,16 @@ export const createAddressMarker = (
     const popup: PopupWithMarker = Object.assign(
       L.popup().setContent(`
     <div>
-      ${point.address}
+      ${escapeHtml(point.address)}
 
       ${
         showDebugInfo
           ? `<br><br><em>${point.lineNumbers
-              ?.map((line) => `řádek ${line + 1}: ${lines?.[line]}`)
+              ?.map((line) =>
+                lines
+                  ? `řádek ${line + 1}: ${escapeHtml(lines[line] ?? "")}`
+                  : `řádek ${line + 1}`
+              )
               .join("<br>")}</em>`
           : ""
       }
@@ -250,9 +263,9 @@ export const createCityMarker = (
   const marker = L.marker([city.lat, city.lng], {
     icon: city.isPublished ? publicIcon : notReadyIcon,
   }).bindPopup(
-    `<div class="text-center"><span class="text-base font-semibold">${
+    `<div class="text-center"><span class="text-base font-semibold">${escapeHtml(
       city.name
-    }</span><br> ${
+    )}</span><br> ${
       city.isPublished
         ? `${createCityMarkerButton(city.code)}`
         : "zatím není připraveno"

@@ -1,0 +1,27 @@
+# Rebuilds the site weekly so it picks up fresh data from
+# mapaspadovosti.softresource.cz (fetched at build time, see src/utils/sourceData.ts).
+#
+# Setup: in Vercel, Project Settings > Git > Deploy Hooks, create a hook for the
+# main branch, then save its URL as the VERCEL_DEPLOY_HOOK_URL repository secret.
+name: Weekly rebuild
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK_URL" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL secret is not set"
+            exit 1
+          fi
+          curl --fail --silent --show-error --output /dev/null -X POST "$DEPLOY_HOOK_URL"

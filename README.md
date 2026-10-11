@@ -23,5 +23,3 @@ Nabízí se řada využití těchto dat:
 Hlavním zaměřením jsou spádové oblasti škol. Chceme v první fázi pracovat se stakeholdery a nadesignovat a vytvořit nástroje, které by umožnily výše zmiňované využití dat (např. zobrazení na mapě, propojení prvňáčků se spádovými školami atp.) V blízké budoucnosti budou spádovosti spravovány na jednom místě (v gesci MŠMT) přímo ve strojově zpracovatelném formátu a budou dostupné v podobě otevřených dat.
 
 Dalším budoucím potenciálním cílem je rozšíření principu text-to-map a formátu Street Markdown pro další způsoby využití (viz níže).
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E5JOMLT)

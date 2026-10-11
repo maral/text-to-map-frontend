@@ -59,7 +59,7 @@ export const createMap = (
     data,
     showDebugInfo,
     color,
-    lines: showDebugInfo && text ? text.split("\n") : [],
+    lines: showDebugInfo && text ? text.split("\n") : undefined,
   });
 
   markers = addressMarkers;

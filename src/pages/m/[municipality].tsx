@@ -26,22 +26,23 @@ export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async (
     };
   }
 
-  try {
-    const municipalitySlug = context.params.municipality as string;
-    return {
-      props: {
-        data: getMunicipalityData(municipalitySlug),
-      },
-    };
-  } catch (e) {
+  const municipalitySlug = context.params.municipality as string;
+  const data = await getMunicipalityData(municipalitySlug);
+  if (!data) {
     return {
       notFound: true,
     };
   }
+
+  return {
+    props: {
+      data,
+    },
+  };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const municipalites = getMunicipalitySlugsList();
+  const municipalites = await getMunicipalitySlugsList();
 
   const paths = municipalites.map(({ slug }) => ({
     params: { municipality: slug },

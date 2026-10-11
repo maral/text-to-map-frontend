@@ -59,7 +59,7 @@ export type SchoolSlugs = SchoolSlugsMunicipality[];
 
 export type MunicipalitySlugs = SlugWithName[];
 
-import { FeatureCollection } from "@turf/helpers";
+import type { FeatureCollection } from "geojson";
 // new types
 
 import {

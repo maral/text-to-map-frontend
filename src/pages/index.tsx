@@ -11,10 +11,10 @@ interface MunicipalityPageProps {
   data: DataForMap;
 }
 
-export const getStaticProps: GetStaticProps<MunicipalityPageProps> = () => {
+export const getStaticProps: GetStaticProps<MunicipalityPageProps> = async () => {
   return {
     props: {
-      data: getAllData(),
+      data: await getAllData(),
     },
   };
 };

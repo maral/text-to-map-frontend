@@ -11,12 +11,12 @@ import {
   isPopupWithMarker,
 } from "@/types/data";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import {
+import type {
   Feature,
   FeatureCollection,
   MultiPolygon,
   Polygon,
-} from "@turf/helpers";
+} from "geojson";
 import L, {
   Circle,
   FeatureGroup,
@@ -58,7 +58,7 @@ export const prepareMap = (
   if (showControls) {
     L.control.zoom({ position: "topleft" }).addTo(map);
   }
-  L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
   }).addTo(map);

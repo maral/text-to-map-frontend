@@ -1,6 +1,10 @@
 import MapPage from "@/components/MapPage/MapPage";
 import { DataForMap } from "@/types/data";
-import { getSchoolData, getSchoolSlugsList } from "@/utils/dataCache";
+import {
+  checkSchoolRedirects,
+  getSchoolData,
+  getSchoolSlugsList,
+} from "@/utils/dataCache";
 import { GetStaticPaths, GetStaticProps } from "next";
 
 const SchoolPage = ({ data }: SchoolPageProps) => {
@@ -23,24 +27,28 @@ export const getStaticProps: GetStaticProps<SchoolPageProps> = async (
     };
   }
 
-  try {
-    const schoolSlug = context.params.school as string;
-    return {
-      props: {
-        data: getSchoolData(schoolSlug),
-      },
-    };
-  } catch (e) {
+  const schoolSlug = context.params.school as string;
+  const data = await getSchoolData(schoolSlug);
+  if (!data) {
     return {
       notFound: true,
     };
   }
+
+  return {
+    props: {
+      data,
+    },
+  };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const schools = getSchoolSlugsList(2025);
+  await checkSchoolRedirects();
 
-  const paths = schools.map((school: string) => ({
+  // A school serving several municipalities is listed in each of them.
+  const schools = new Set(await getSchoolSlugsList());
+
+  const paths = Array.from(schools).map((school: string) => ({
     params: { school },
   }));
 
