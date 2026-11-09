@@ -115,7 +115,7 @@ export type DataForMap = {
 };
 
 /**
- * Addresses served separately from the page (see /data/addresses/[year]), so
+ * Addresses served separately from the page (see /data/addresses/[year].json), so
  * the map can render schools and polygons first. Keyed by municipality code,
  * with areas in the same order as in the page data.
  */

@@ -36,3 +36,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# address files, written before build (scripts/write-address-files.ts)
+/public/data/addresses/

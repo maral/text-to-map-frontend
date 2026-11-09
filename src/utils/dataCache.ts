@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import slug from "slug";
 import {
+  Address,
   AddressesFile,
   DataForMap,
   DeferredAddresses,
@@ -53,10 +54,31 @@ const loadArchivedData = async (year: number): Promise<DataForMap> => {
 export const getAllData = (year?: number): Promise<DataForMap> =>
   loadData(year);
 
-// Years with an address file at /data/addresses/[year].
+// Years with an address file at /data/addresses/[year].json, written to
+// public/ before the build by scripts/write-address-files.ts.
 export const ADDRESS_FILE_YEARS = Array.from(
   new Set([...years.archivedYears, CURRENT_YEAR])
 );
+export const ADDRESS_FILES_DIR = path.join(
+  process.cwd(),
+  "public",
+  "data",
+  "addresses"
+);
+
+const writtenVersions = new Map<number, Promise<string | undefined>>();
+
+const getWrittenAddressFileVersion = (year: number) => {
+  let version = writtenVersions.get(year);
+  if (!version) {
+    version = fs
+      .readFile(path.join(ADDRESS_FILES_DIR, `${year}.json`), "utf8")
+      .then((text) => (JSON.parse(text) as AddressesFile).version)
+      .catch(() => undefined);
+    writtenVersions.set(year, version);
+  }
+  return version;
+};
 
 const addressFiles = new Map<number, Promise<AddressesFile>>();
 
@@ -91,10 +113,17 @@ export const getAddressesFile = (year = CURRENT_YEAR) => {
 export const getDataWithDeferredAddresses = async (
   year = CURRENT_YEAR
 ): Promise<{ data: DataForMap; deferredAddresses: DeferredAddresses }> => {
-  const [{ municipalities, polygons }, { version }] = await Promise.all([
-    loadData(year),
-    getAddressesFile(year),
-  ]);
+  const [{ municipalities, polygons }, { version }, writtenVersion] =
+    await Promise.all([
+      loadData(year),
+      getAddressesFile(year),
+      getWrittenAddressFileVersion(year),
+    ]);
+  if (writtenVersion !== version) {
+    throw new Error(
+      `public/data/addresses/${year}.json is missing or doesn't match the page data; run scripts/write-address-files.ts (npm runs it before build and dev)`
+    );
+  }
   return {
     data: {
       municipalities: municipalities.map((municipality) => ({
@@ -104,7 +133,7 @@ export const getDataWithDeferredAddresses = async (
       })),
       polygons,
     },
-    deferredAddresses: { url: `/data/addresses/${year}`, version },
+    deferredAddresses: { url: `/data/addresses/${year}.json`, version },
   };
 };
 
@@ -228,7 +257,7 @@ export const getMunicipalityData = async (
   }
 
   return {
-    municipalities: [municipality],
+    municipalities: [withoutLineNumbers(municipality)],
     polygons: {
       [municipality.code]: polygons[municipality.code],
     },
@@ -252,7 +281,7 @@ export const getSchoolData = async (
         );
         return {
           municipalities: [
-            {
+            withoutLineNumbers({
               ...municipality,
               areas: [
                 {
@@ -260,7 +289,7 @@ export const getSchoolData = async (
                   schools: [school],
                 },
               ],
-            },
+            }),
           ],
           polygons: {
             [municipality.code]: {
@@ -273,6 +302,24 @@ export const getSchoolData = async (
     }
   }
   return undefined;
+};
+
+// lineNumbers are only shown by the debug view (/chyby), so pages without it
+// leave them out to stay smaller.
+const withoutLineNumbers = (municipality: Municipality): Municipality => {
+  const strip = ({ address, lat, lng }: Address): Address => ({
+    address,
+    lat,
+    lng,
+  });
+  return {
+    ...municipality,
+    areas: municipality.areas.map((area) => ({
+      ...area,
+      addresses: area.addresses.map(strip),
+    })),
+    unmappedPoints: municipality.unmappedPoints.map(strip),
+  };
 };
 
 const pragueDistrictSortingFuction = (a: string, b: string) => {

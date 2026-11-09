@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "tsx scripts/write-address-files.ts",
     "dev": "next dev",
+    "prebuild": "tsx scripts/write-address-files.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint ."
@@ -32,6 +34,7 @@
     "@types/slug": "^5.0.9",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.8",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   },
   "overrides": {
